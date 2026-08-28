@@ -23,14 +23,14 @@ export async function login(req: Request, res: Response) {
     const validUser = await sql`
       SELECT *
       FROM users
-      WHERE username = ${username}
+      WHERE username = ${username} OR email = ${username}
     `;
 
     const user = validUser[0];
 
     if (!user) {
       return res.status(200).json({
-        message: "Invalid username",
+        message: "Invalid username or email",
       });
     }
 
