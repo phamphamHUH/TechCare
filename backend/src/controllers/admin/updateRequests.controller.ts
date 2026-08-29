@@ -49,12 +49,9 @@ export async function updateUser(req: Request, res: Response) {
     let profilePhoto: string | null = null;
 
     if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload(
-        req.file.path,
-        {
-          folder: "techcare/user_photos",
-        }
-      );
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "techcare/user_photos",
+      });
 
       profilePhoto = uploadResult.secure_url;
     }
@@ -193,12 +190,62 @@ export async function updateUser(req: Request, res: Response) {
       message: "User updated successfully!",
       user: updatedUser[0],
     });
-
   } catch (error) {
     console.error("UPDATE USER ERROR:", error);
 
     return res.status(500).json({
       message: "Failed to update user",
+    });
+  }
+}
+
+export async function updateUserStatus(req: Request, res: Response) {
+  try {
+    const { user_id } = req.params;
+    const { account_status } = req.body;
+    const allowed = ["active", "inactive", "suspended"];
+
+    if (!account_status || !user_id) {
+      return res.status(400).json({
+        message: "Requred fields not found.",
+      });
+    }
+
+    if (!allowed.includes(account_status.toLowerCase())) {
+      return res.status(400).json({ message: "Invalid account status" });
+    }
+
+    if (
+      account_status.toLowerCase() !== "active" &&
+      user_id != req.user.user_id
+    ) {
+      return res
+        .status(400)
+        .json({ message: "You can't deactivate your own account." });
+    }
+
+    const updatedAccountStatus = await sql`
+        UPDATE users
+        SET account_status = ${account_status}, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ${user_id}
+        RETURNING user_id,
+                  first_name,
+                  last_name,
+                  middle_name,
+                  role,
+                  account_status;  
+        `;
+
+    if (updatedAccountStatus.length !== 0) {
+      return res.status(200).json({
+        message: "User successfully deactivated.",
+        updateUserStatus: updatedAccountStatus,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error.",
     });
   }
 }
