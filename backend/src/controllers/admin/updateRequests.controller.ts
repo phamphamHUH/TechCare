@@ -203,16 +203,11 @@ export async function updateUserStatus(req: Request, res: Response) {
   try {
     const { user_id } = req.params;
     const { account_status } = req.body;
-    const allowed = ["active", "inactive", "suspended"];
 
     if (!account_status || !user_id) {
       return res.status(400).json({
         message: "Requred fields not found.",
       });
-    }
-
-    if (!allowed.includes(account_status.toLowerCase())) {
-      return res.status(400).json({ message: "Invalid account status" });
     }
 
     if (
