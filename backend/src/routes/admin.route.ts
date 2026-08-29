@@ -11,7 +11,10 @@ import {
   addService,
   addActivity,
 } from "../controllers/admin/postRequests.controller.js";
-import { updateUser } from "../controllers/admin/updateRequests.controller.js";
+import {
+  updateUser,
+  updateUserStatus,
+} from "../controllers/admin/updateRequests.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import adminMiddleware from "../middlewares/admin.middleware.js";
@@ -28,11 +31,8 @@ router.get("/activities", getAllActivities);
 router.get("/users", getAllUsers);
 router.post("/add-user", upload.single("image"), addUser);
 router.post("/services", addService);
-router.patch(
-  "/users/:user_id",
-  upload.single("image"),
-  updateUser
-);
+router.patch("/users/:user_id", upload.single("image"), updateUser);
+router.patch("/users/:user_id", adminMiddleware, updateUserStatus);
 router.post("/activities", addActivity);
 
 export default router;
