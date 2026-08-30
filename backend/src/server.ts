@@ -1,49 +1,7 @@
-import express from "express";
-import path from "path";
-import multer from "multer";
-import cors from "cors"; // ← added
-const upload = multer({
-  dest: "uploads/",
-});
-
-// import { initializeWebSocket } from "./websocket.js";
-import { fileURLToPath } from "url";
+import { app } from "./app.js";
 import { connectNeon, syncSchema } from "./config/db.js";
 import { ENV } from "./config/env.js";
-import adminRoutes from "./routes/admin.route.js";
-import authRoutes from "./routes/auth.route.js";
-import testRoutes from "./routes/test.routes.js";
-import fdstaffRoutes from "./routes/fdstaff.route.js";
-import labstaffRoutes from "./routes/labstaff.route.js";
-
-// FIX __dirname for ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-const cors_origins = ENV.CORS_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean);
-app.use(cors({                                               // ← added
-  origin: cors_origins,
-  credentials: true,
-}));
-
-app.use(express.json());
-
-// API routes
-app.use("/api/test", testRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/fdstaff", fdstaffRoutes);
-app.use("/api/labstaff", labstaffRoutes);
-
-// Test route
-const frontendPath = path.resolve(__dirname, "../../frontend/dist");
-
-app.use(express.static(frontendPath));
-
-app.use((req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
+// import { initializeWebSocket } from "./websocket.js";
 
 // IMPORTANT: Render needs process.env.PORT
 
@@ -52,11 +10,14 @@ async function initializeServer() {
     await connectNeon();
 
     if (ENV.IS_PRODUCTION) {
-      console.log("IS_PRODUCTION:", ENV.IS_PRODUCTION, typeof ENV.IS_PRODUCTION);
-      await syncSchema();  // only turn this on if you want the scheme to sync the database // dont turn this one while editing the db
-
-      // if you ever want to sync the database while in devq then just change your .env file to have IS_PRODUCTION=true and then run the servera again
+      console.log(
+        "IS_PRODUCTION:",
+        ENV.IS_PRODUCTION,
+        typeof ENV.IS_PRODUCTION,
+      );
+      await syncSchema(); // only turn this on if you want the schema to sync the database // don't turn this on while editing the db
     }
+
     const server = app.listen(ENV.PORT, () => {
       console.log(`Server is up and running on http://localhost:${ENV.PORT}`);
     });
@@ -64,7 +25,7 @@ async function initializeServer() {
   } catch (error) {
     console.error("Error initializing server:", error);
     process.exit(1);
-  } 
+  }
 }
 
 await initializeServer();
