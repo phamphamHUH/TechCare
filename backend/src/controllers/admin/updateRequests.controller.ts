@@ -195,7 +195,7 @@ export async function updateUser(req: Request, res: Response) {
 
 export async function updateUserStatus(req: Request, res: Response) {
   try {
-    const { user_id } = req.params as { user_id: string };
+    const { user_id } = req.params;
     const { account_status } = req.body;
 
     if (account_status === undefined) {
