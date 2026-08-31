@@ -3,6 +3,7 @@ import { sql } from "../../config/db.js";
 
 export async function createTestUser(
   overrides: Partial<Record<string, string | null>> = {},
+  role: "admin" | "doctor" | "labstaff" | "fdstaff" | string = "admin",
 ) {
   const uniqueId = Date.now();
   const plainPassword = "password123";
@@ -22,7 +23,7 @@ export async function createTestUser(
     emergency_contact: "09000000000",
     address: "Test Address",
     birthdate: "2000-01-01",
-    role: "admin",
+    role: role,
     department: "Test Department",
     employment_status: "Full-time",
     date_hired: "2024-01-01",
