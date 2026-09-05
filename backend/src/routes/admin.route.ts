@@ -20,10 +20,7 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 import adminMiddleware from "../middlewares/admin.middleware.js";
 const router = Router();
 
-if (ENV.IS_PRODUCTION) {
-  router.use(authMiddleware, adminMiddleware);
-  console.log("Admin routes enabled");
-}
+router.use(authMiddleware, adminMiddleware);
 
 router.get("/services", getAllservices);
 router.get("/activity", getMyActivities);
@@ -32,7 +29,7 @@ router.get("/users", getAllUsers);
 router.post("/add-user", upload.single("image"), addUser);
 router.post("/services", addService);
 router.patch("/users/:user_id", upload.single("image"), updateUser);
-router.patch("/users/:user_id", adminMiddleware, updateUserStatus);
+router.patch("/users/:user_id/status", updateUserStatus);
 router.post("/activities", addActivity);
 
 export default router;

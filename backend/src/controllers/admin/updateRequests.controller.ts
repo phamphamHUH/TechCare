@@ -26,7 +26,6 @@ export async function updateUser(req: Request, res: Response) {
       role,
       department,
       employment_status,
-      account_status,
       date_hired,
       shift_start,
       shift_end,
@@ -140,11 +139,6 @@ export async function updateUser(req: Request, res: Response) {
           employment_status
         ),
 
-        account_status = COALESCE(
-          ${account_status},
-          account_status
-        ),
-
         date_hired = COALESCE(
           ${date_hired},
           date_hired
@@ -204,16 +198,19 @@ export async function updateUserStatus(req: Request, res: Response) {
     const { user_id } = req.params;
     const { account_status } = req.body;
 
-    if (!account_status || !user_id) {
+    if (account_status === undefined) {
       return res.status(400).json({
-        message: "Requred fields not found.",
+        message: "Account status is required.",
       });
     }
 
-    if (
-      account_status.toLowerCase() !== "active" &&
-      user_id != req.user.user_id
-    ) {
+    if (typeof account_status !== "boolean") {
+      return res.status(400).json({
+        message: "Account status must be a boolean.",
+      });
+    }
+
+    if (!account_status && user_id === req.user.user_id) {
       return res
         .status(400)
         .json({ message: "You can't deactivate your own account." });
@@ -234,7 +231,7 @@ export async function updateUserStatus(req: Request, res: Response) {
     if (updatedAccountStatus.length !== 0) {
       return res.status(200).json({
         message: "User successfully deactivated.",
-        updateUserStatus: updatedAccountStatus,
+        updatedAccountStatus: updatedAccountStatus,
       });
     }
   } catch (error) {
