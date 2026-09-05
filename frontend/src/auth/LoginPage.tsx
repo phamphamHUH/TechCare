@@ -105,7 +105,7 @@ function LoginPage() {
 
             {errorMessage && (
               <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
-                <span>⚠️ {errorMessage}</span>
+                <span>{errorMessage}</span>
               </div>
             )}
 

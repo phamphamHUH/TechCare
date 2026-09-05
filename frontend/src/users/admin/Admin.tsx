@@ -5,11 +5,14 @@ import {
     Users,
     BadgeDollarSign,
     Activity,
-} from "lucide-react";import UserManagement from "./pages/UserManagement";
+    FileText,
+} from "lucide-react";
+import UserManagement from "./pages/UserManagement";
 import AdminDashboard from "./pages/AdminDashboard";
 import SideBar from "../../components/SideBar";
 import ServicePricingManagement from "./pages/ServicePricing";
 import ActivityMonitoring from "./pages/ActivityMonitoring";
+import ReportBuilder from "./pages/ReportBuilder";
 import api from "../../lib/axios";
 import type { User } from "../../interface/User";
 import type { Service } from "../../interface/Service";
@@ -58,6 +61,11 @@ function Admin() {
         page: "activity-monitoring",
         label: "Activity Monitoring",
         icon: <Activity size={20} />,
+    },
+    {
+        page: "report-builder",
+        label: "Report Builder",
+        icon: <FileText size={20} />,
     },
 ];
     const loadData = useCallback(async () => {
@@ -129,6 +137,14 @@ function Admin() {
                 <ActivityMonitoring
                     loading={loading}
                     activities={activities}
+                    open={open}
+                    setOpen={setOpen}
+                    loadData={loadData}
+                />
+            )}
+            {page === "report-builder" && (
+                <ReportBuilder
+                    loading={loading}
                     open={open}
                     setOpen={setOpen}
                     loadData={loadData}
