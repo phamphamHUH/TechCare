@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import request from "supertest";
-import { app } from "../../app.js";
+import app from "../../app.js";
 import { createTestUser } from "../helper/testUser.js";
 
 // TEST CASES UNDER LOGIN

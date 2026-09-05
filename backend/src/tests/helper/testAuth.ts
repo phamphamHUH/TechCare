@@ -1,5 +1,5 @@
 import request from "supertest";
-import { app } from "../../app"; // adjust path
+import app from "../../app"; // adjust path
 
 export async function loginAndGetTestToken(username: string, password: string) {
   const res = await request(app)
