@@ -47,4 +47,4 @@ app.use((req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-export { app };
+export default app;

@@ -1,4 +1,4 @@
-import { app } from "./app.js";
+import app from "./app.js";
 import { connectNeon, syncSchema } from "./config/db.js";
 import { ENV } from "./config/env.js";
 // import { initializeWebSocket } from "./websocket.js";
