@@ -1,27 +1,7 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { type Dispatch, type SetStateAction } from "react";
-
-type Queue = {
-  id: number;
-  queue_id: string;
-  patient_id: string;
-  queue_number: number;
-  service_id: string;
-  is_priority: boolean;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
-
-type LaboratoryItem = {
-  id: number;
-  lab_item_id: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  service_name: string;
-  service_type: string;
-};
+import type { LaboratoryItem } from "../../../../interface/LaboratoryItem";
+import type { Queue } from "../../../../interface/Queue";
 
 type QueueTableProps = {
   filterQueues: Queue[];
