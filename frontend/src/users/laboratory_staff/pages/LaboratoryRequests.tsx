@@ -3,28 +3,8 @@ import RequestSummary from "../components/LaboratoryRequests/RequestSummary";
 import LaboratoryQueuePanel from "../components/LaboratoryRequests/LaboratoryQueuePanel";
 import { useState } from "react";
 import InformationCard from "../components/LaboratoryRequests/InformationCard";
-
-type Queue = {
-  id: number;
-  queue_id: string;
-  patient_id: string;
-  queue_number: number;
-  service_id: string;
-  is_priority: boolean;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
-
-type Service = {
-  id: number;
-  service_id: string;
-  service_name: string;
-  service_type: string;
-  price: number;
-  active: boolean;
-  room: string;
-};
+import type { Queue } from "../../../interface/Queue";
+import type { Service } from "../../../interface/Service";
 
 type LaboratoryRequestsProps = {
   open: boolean;

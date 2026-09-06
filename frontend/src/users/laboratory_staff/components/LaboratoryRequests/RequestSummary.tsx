@@ -1,27 +1,7 @@
 import { useState } from "react";
 import ServiceModal from "./ServiceModal";
-
-type Service = {
-  id: number;
-  service_id: string;
-  service_name: string;
-  service_type: string;
-  price: number;
-  active: boolean;
-  room: string;
-};
-
-type Queue = {
-  id: number;
-  queue_id: string;
-  patient_id: string;
-  queue_number: number;
-  service_id: string;
-  is_priority: boolean;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
+import type { Queue } from "../../../../interface/Queue";
+import type { Service } from "../../../../interface/Service";
 
 type RequestSummaryProps = {
   services: Service[];
