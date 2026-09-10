@@ -61,11 +61,10 @@ export async function getAllActivities(req: Request, res: Response) { // get /ap
       FROM system_activity sa
       JOIN users u
       ON sa.user_id = u.user_id;
+      ORDER BY sa.created_at DESC;
 `;
-    if (!activities) {
-      res.json({ message: "there are no activities" });
-      {
-      }
+    if (activities.length === 0) {
+      return res.status(200).json({ activities: [], message: "there are no activities" });
     }
 
     res.status(200).json({ activities });
