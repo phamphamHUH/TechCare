@@ -1,14 +1,5 @@
 import { X } from "lucide-react";
-
-type Service = {
-  id: number;
-  service_id: string;
-  service_name: string;
-  service_type: string;
-  price: number;
-  active: boolean;
-  room: string;
-};
+import type { Service } from "../../../../interface/Service";
 
 type ServiceModalProps = {
   services: Service[];

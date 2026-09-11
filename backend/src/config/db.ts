@@ -1,13 +1,11 @@
 import { neon } from "@neondatabase/serverless";
-import "dotenv/config";
+import { ENV } from "./env.js";
 
-const DATABASE_URL = process.env.DATABASE_URL;
-
-if (!DATABASE_URL) {
+if (!ENV.DATABASE_URL) {
   throw new Error("DATABASE_URL is not defined");
 }
 
-export const sql = neon(DATABASE_URL);
+export const sql = neon(ENV.DATABASE_URL);
 
 // =======================================================================
 // TABLE DEFINITIONS
@@ -403,9 +401,7 @@ export async function connectNeon(): Promise<void> {
 // - Adding a NOT NULL column to a table with existing rows requires
 //   either a DEFAULT or existing rows must be populated first.
 // -----------------------------------------------------------------------
-export async function syncSchema(
-  onlyTables?: string[],
-): Promise<void> {
+export async function syncSchema(onlyTables?: string[]): Promise<void> {
   try {
     console.log("[schema-sync] starting...");
 
@@ -417,9 +413,7 @@ export async function syncSchema(
       ? TABLES.filter((table) => onlyTables.includes(table.table))
       : TABLES;
 
-    const configuredTableNames = configuredTables.map(
-      (table) => table.table,
-    );
+    const configuredTableNames = configuredTables.map((table) => table.table);
 
     // ---------------------------------------------------------------
     // 1. GET EXISTING TABLES
@@ -434,9 +428,7 @@ export async function syncSchema(
       table_name: string;
     }[];
 
-    const existingTableNames = existingTableRows.map(
-      (row) => row.table_name,
-    );
+    const existingTableNames = existingTableRows.map((row) => row.table_name);
 
     // ---------------------------------------------------------------
     // 2. DROP EXTRA TABLES
@@ -460,13 +452,9 @@ export async function syncSchema(
     );
 
     for (const tableName of tablesToDrop) {
-      console.log(
-        `[schema-sync] dropping extra table "${tableName}"`,
-      );
+      console.log(`[schema-sync] dropping extra table "${tableName}"`);
 
-      await sql.query(
-        `DROP TABLE IF EXISTS "${tableName}" CASCADE`,
-      );
+      await sql.query(`DROP TABLE IF EXISTS "${tableName}" CASCADE`);
     }
 
     // ---------------------------------------------------------------
@@ -491,9 +479,7 @@ export async function syncSchema(
 
         await sql.query(createSQL);
 
-        console.log(
-          `[schema-sync] ${tableName}: created`,
-        );
+        console.log(`[schema-sync] ${tableName}: created`);
 
         continue;
       }
@@ -530,17 +516,14 @@ export async function syncSchema(
         (column) => column.column_name,
       );
 
-      const desiredColumnNames = Object.keys(
-        desiredColumns,
-      );
+      const desiredColumnNames = Object.keys(desiredColumns);
 
       // -------------------------------------------------------------
       // FIND MISSING COLUMNS
       // -------------------------------------------------------------
 
       const columnsToAdd = desiredColumnNames.filter(
-        (columnName) =>
-          !existingColumnNames.includes(columnName),
+        (columnName) => !existingColumnNames.includes(columnName),
       );
 
       // -------------------------------------------------------------
@@ -548,21 +531,15 @@ export async function syncSchema(
       // -------------------------------------------------------------
 
       const columnsToDrop = existingColumnNames.filter(
-        (columnName) =>
-          !desiredColumnNames.includes(columnName),
+        (columnName) => !desiredColumnNames.includes(columnName),
       );
 
       // -------------------------------------------------------------
       // NOTHING TO CHANGE
       // -------------------------------------------------------------
 
-      if (
-        columnsToAdd.length === 0 &&
-        columnsToDrop.length === 0
-      ) {
-        console.log(
-          `[schema-sync] ${tableName}: already in sync`,
-        );
+      if (columnsToAdd.length === 0 && columnsToDrop.length === 0) {
+        console.log(`[schema-sync] ${tableName}: already in sync`);
 
         continue;
       }
@@ -572,18 +549,15 @@ export async function syncSchema(
       // -------------------------------------------------------------
 
       for (const columnName of columnsToAdd) {
-        const definition =
-          desiredColumns[columnName];
+        const definition = desiredColumns[columnName];
 
         console.log(
           `[schema-sync] ${tableName}: adding column "${columnName}"`,
         );
 
-        const isNotNull =
-          /\bNOT\s+NULL\b/i.test(definition);
+        const isNotNull = /\bNOT\s+NULL\b/i.test(definition);
 
-        const hasDefault =
-          /\bDEFAULT\b/i.test(definition);
+        const hasDefault = /\bDEFAULT\b/i.test(definition);
 
         // -----------------------------------------------------------
         // CASE 1:
@@ -613,11 +587,10 @@ export async function syncSchema(
         // -----------------------------------------------------------
 
         if (isNotNull && !hasDefault) {
-          const nullableDefinition =
-            definition.replace(
-              /\s+NOT\s+NULL\b/gi,
-              "",
-            );
+          const nullableDefinition = definition.replace(
+            /\s+NOT\s+NULL\b/gi,
+            "",
+          );
 
           await sql.query(`
             ALTER TABLE "${tableName}"
@@ -696,19 +669,12 @@ export async function syncSchema(
         `);
       }
 
-      console.log(
-        `[schema-sync] ${tableName}: schema updated`,
-      );
+      console.log(`[schema-sync] ${tableName}: schema updated`);
     }
 
-    console.log(
-      "[schema-sync] database schema synchronized successfully",
-    );
+    console.log("[schema-sync] database schema synchronized successfully");
   } catch (error) {
-    console.error(
-      "[schema-sync] Error synchronizing database schema:",
-      error,
-    );
+    console.error("[schema-sync] Error synchronizing database schema:", error);
 
     throw error;
   }
