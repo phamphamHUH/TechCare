@@ -121,11 +121,13 @@ function UserManagement({
                 />
             )}
 
-            {showUserProfile && (
+             {showUserProfile && (
                 <UserProfile
-                    user={selectedUser}
-                    onBack={() => setShowUserProfile(false)}
-                    setShowUpdateUser={() => setShowUpdateUser(true)}
+                loadData={loadData}
+                user={selectedUser}
+                onBack={() => setShowUserProfile(false)}
+                setShowUpdateUser={() => setShowUpdateUser(true)}
+                setSelectedUser={setSelectedUser}
                 />
             )}
 
