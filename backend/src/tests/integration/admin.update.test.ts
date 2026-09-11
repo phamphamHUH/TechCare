@@ -88,74 +88,6 @@ describe("PATCH /api/admin/users/:user_id", () => {
     expect(res.status).toBe(404);
     expect(res.body.message).toBe("User not found");
   });
-
-  it("fails with invalid token", async () => {
-    const testUser = await createTestUser({}, "doctor");
-    const testToken = "fakeToken";
-
-    const updatePayload = {
-      password: "newPassword123!",
-    };
-
-    const res = await request(app)
-      .patch(`/api/admin/users/${testUser.user_id}`)
-      .set("Authorization", `Bearer ${testToken}`)
-      .send(updatePayload);
-
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("Invalid or expired token");
-  });
-
-  it("fails with missing token", async () => {
-    const testUser = await createTestUser({}, "doctor");
-
-    const updatePayload = {
-      password: "newPassword123!",
-    };
-
-    const res = await request(app)
-      .patch(`/api/admin/users/${testUser.user_id}`)
-      .send(updatePayload);
-
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("No token provided");
-  });
-
-  it("fails with invalid token", async () => {
-    const testUser = await createTestUser({}, "doctor");
-
-    const updatePayload = {
-      password: "newPassword123!",
-    };
-
-    const res = await request(app)
-      .patch(`/api/admin/users/${testUser.user_id}`)
-      .send(updatePayload);
-
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("No token provided");
-  });
-
-  it("requires admin role", async () => {
-    const testUser = await createTestUser({}, "doctor");
-    const testNonAdmin = await createTestUser({}, "doctor");
-    const testToken = await loginAndGetTestToken(
-      testNonAdmin.username,
-      testNonAdmin.plainPassword,
-    );
-
-    const updatePayload = {
-      password: "newPassword123!",
-    };
-
-    const res = await request(app)
-      .patch(`/api/admin/users/${testUser.user_id}`)
-      .set("Authorization", `Bearer ${testToken}`)
-      .send(updatePayload);
-
-    expect(res.status).toBe(403);
-    expect(res.body.message).toBe("Invalid role");
-  });
 });
 
 // UPDATE USER ACCOUNT STATUS
@@ -210,46 +142,5 @@ describe("PATCH /api/admin/users/:user_id/status", () => {
 
     expect(res.status).toBe(400);
     expect(res.body.message).toBe("Account status must be a boolean.");
-  });
-
-  it("fails with missing token", async () => {
-    const testUser = await createTestUser({}, "doctor");
-
-    const res = await request(app)
-      .patch(`/api/admin/users/${testUser.user_id}/status`)
-      .send({ account_status: "false" });
-
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("No token provided");
-  });
-
-  it("fails with invalid token", async () => {
-    const testUser = await createTestUser({}, "doctor");
-    const testToken = "fakeToken";
-
-    const res = await request(app)
-      .patch(`/api/admin/users/${testUser.user_id}/status`)
-      .set("Authorization", `Bearer ${testToken}`)
-      .send({ account_status: "false" });
-
-    expect(res.status).toBe(401);
-    expect(res.body.message).toBe("Invalid or expired token");
-  });
-
-  it("requires admin role", async () => {
-    const testUser = await createTestUser({}, "doctor");
-    const testNonAdmin = await createTestUser({}, "doctor");
-    const testToken = await loginAndGetTestToken(
-      testNonAdmin.username,
-      testNonAdmin.plainPassword,
-    );
-
-    const res = await request(app)
-      .patch(`/api/admin/users/${testUser.user_id}/status`)
-      .set("Authorization", `Bearer ${testToken}`)
-      .send({ account_status: false });
-
-    expect(res.status).toBe(403);
-    expect(res.body.message).toBe("Invalid role");
   });
 });

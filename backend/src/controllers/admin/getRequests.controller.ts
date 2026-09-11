@@ -8,7 +8,6 @@ export async function getAllUsers(req: Request, res: Response) {
       SELECT *
       FROM users
     `;
-
     return res.status(200).json({
       users,
     });
@@ -52,7 +51,8 @@ export async function getAllUsers(req: Request, res: Response) {
 //     }
 //   ]
 // }
-export async function getAllActivities(req: Request, res: Response) { // get /api/admin/activities
+export async function getAllActivities(req: Request, res: Response) {
+  // get /api/admin/activities
   try {
     const activities = await sql`
       SELECT
@@ -101,36 +101,34 @@ export async function getAllActivities(req: Request, res: Response) { // get /ap
 }
 //----------------------------------------------------------------------------------------------------------------//
 
-export async function getAllservices(req: Request, res: Response) { // get /api/admin/services
+export async function getAllservices(req: Request, res: Response) {
+  // get /api/admin/services
   try {
     const services = await sql`SELECT * FROM services`;
-    if (!services) {
-      res.json({ message: "there are no services" });
-    }
-    res.status(200).json({ services });
+    return res.status(200).json({ services });
 
-// {
-//   "services": [
-//   {
-//     "service_id": 1,
-//     "service_name": "Haircut",
-//     "price": "250.00",
-//     "discount_pct": "0.00",
-//     "deleted": false,
-//     "created_at": "2026-07-02T08:00:00.000Z",
-//     "updated_at": "2026-07-02T08:00:00.000Z"
-//   },
-//   {
-//     "service_id": 2,
-//     "service_name": "Hair Coloring",
-//     "price": "1200.00",
-//     "discount_pct": "10.00",
-//     "deleted": false,
-//     "created_at": "2026-07-02T08:05:00.000Z",
-//     "updated_at": "2026-07-02T08:05:00.000Z"
-//   }
-// ]
-// }
+    // {
+    //   "services": [
+    //   {
+    //     "service_id": 1,
+    //     "service_name": "Haircut",
+    //     "price": "250.00",
+    //     "discount_pct": "0.00",
+    //     "deleted": false,
+    //     "created_at": "2026-07-02T08:00:00.000Z",
+    //     "updated_at": "2026-07-02T08:00:00.000Z"
+    //   },
+    //   {
+    //     "service_id": 2,
+    //     "service_name": "Hair Coloring",
+    //     "price": "1200.00",
+    //     "discount_pct": "10.00",
+    //     "deleted": false,
+    //     "created_at": "2026-07-02T08:05:00.000Z",
+    //     "updated_at": "2026-07-02T08:05:00.000Z"
+    //   }
+    // ]
+    // }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -138,41 +136,41 @@ export async function getAllservices(req: Request, res: Response) { // get /api/
 }
 //----------------------------------------------------------------------------------------------------------------//
 
-
-export async function getMyActivities(req: Request, res: Response) { // get /api/admin/activity
-    try {
-        const response = await sql`
+export async function getMyActivities(req: Request, res: Response) {
+  // get /api/admin/activity
+  try {
+    const response = await sql`
     SELECT * FROM system_activity
     WHERE user_id = ${req.user.user_id}
     `;
-        const activities = response[0];
-        if (!activities) {
-            res.json({ message: "You have no activities " });
-        }
-
-        res.status(200).json({ activities });
-        // {
-        //   "activities": 
-        //   [{
-        //     "activity_id": 1,
-        //     "user_id": 11,
-        //     "service_name": "pakalbo",
-        //     "details": {
-        //       "kalbo": "panot",
-        //       "semiKal": "utot"},
-        //     "created_at": "2026-06-28T20:19:10.904Z",
-        //   },
-        //   {
-        //     "activity_id": 2,
-        //     "user_id": 11,
-        //     "service_name": "pakalbo",
-        //     "details": {
-        //       "kalbo": "panot",
-        //       "semiKal": "utot"},
-        //     "created_at": "2026-06-28T20:19:22.051Z",
-        //   }]
-        // }
-    } catch (error) {
-        res.status(500).json({ error: "error on get your activities" });
+    const activities = response[0];
+    if (!activities) {
+      res.json({ message: "You have no activities " });
     }
+
+    res.status(200).json({ activities });
+    // {
+    //   "activities":
+    //   [{
+    //     "activity_id": 1,
+    //     "user_id": 11,
+    //     "service_name": "pakalbo",
+    //     "details": {
+    //       "kalbo": "panot",
+    //       "semiKal": "utot"},
+    //     "created_at": "2026-06-28T20:19:10.904Z",
+    //   },
+    //   {
+    //     "activity_id": 2,
+    //     "user_id": 11,
+    //     "service_name": "pakalbo",
+    //     "details": {
+    //       "kalbo": "panot",
+    //       "semiKal": "utot"},
+    //     "created_at": "2026-06-28T20:19:22.051Z",
+    //   }]
+    // }
+  } catch (error) {
+    res.status(500).json({ error: "error on get your activities" });
+  }
 }
