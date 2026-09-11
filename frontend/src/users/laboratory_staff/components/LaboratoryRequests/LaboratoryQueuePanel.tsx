@@ -2,38 +2,9 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import api from "../../../../lib/axios";
 import QueueTabs from "./QueueTabs";
 import QueueTable from "./QueueTable";
-
-type LaboratoryItem = {
-  id: number;
-  lab_item_id: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  service_name: string;
-  service_type: string;
-};
-
-type Queue = {
-  id: number;
-  queue_id: string;
-  patient_id: string;
-  queue_number: number;
-  service_id: string;
-  is_priority: boolean;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
-
-type Service = {
-  id: number;
-  service_id: string;
-  service_name: string;
-  service_type: string;
-  price: number;
-  active: boolean;
-  room: string;
-};
+import type { LaboratoryItem } from "../../../../interface/LaboratoryItem";
+import type { Queue } from "../../../../interface/Queue";
+import type { Service } from "../../../../interface/Service";
 
 type MainFilter = "All" | "Waiting" | "Serving" | "Completed" | "Skipped";
 

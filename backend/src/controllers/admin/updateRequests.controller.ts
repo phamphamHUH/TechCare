@@ -26,7 +26,6 @@ export async function updateUser(req: Request, res: Response) {
       role,
       department,
       employment_status,
-      account_status,
       date_hired,
       shift_start,
       shift_end,
@@ -49,12 +48,9 @@ export async function updateUser(req: Request, res: Response) {
     let profilePhoto: string | null = null;
 
     if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload(
-        req.file.path,
-        {
-          folder: "techcare/user_photos",
-        }
-      );
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "techcare/user_photos",
+      });
 
       profilePhoto = uploadResult.secure_url;
     }
@@ -143,11 +139,6 @@ export async function updateUser(req: Request, res: Response) {
           employment_status
         ),
 
-        account_status = COALESCE(
-          ${account_status},
-          account_status
-        ),
-
         date_hired = COALESCE(
           ${date_hired},
           date_hired
@@ -193,12 +184,60 @@ export async function updateUser(req: Request, res: Response) {
       message: "User updated successfully!",
       user: updatedUser[0],
     });
-
   } catch (error) {
     console.error("UPDATE USER ERROR:", error);
 
     return res.status(500).json({
       message: "Failed to update user",
+    });
+  }
+}
+
+export async function updateUserStatus(req: Request, res: Response) {
+  try {
+    const { user_id } = req.params;
+    const { account_status } = req.body;
+
+    if (account_status === undefined) {
+      return res.status(400).json({
+        message: "Account status is required.",
+      });
+    }
+
+    if (typeof account_status !== "boolean") {
+      return res.status(400).json({
+        message: "Account status must be a boolean.",
+      });
+    }
+
+    if (!account_status && user_id === req.user.user_id) {
+      return res
+        .status(400)
+        .json({ message: "You can't deactivate your own account." });
+    }
+
+    const updatedAccountStatus = await sql`
+        UPDATE users
+        SET account_status = ${account_status}, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ${user_id}
+        RETURNING user_id,
+                  first_name,
+                  last_name,
+                  middle_name,
+                  role,
+                  account_status;  
+        `;
+
+    if (updatedAccountStatus.length !== 0) {
+      return res.status(200).json({
+        message: "User successfully deactivated.",
+        updatedAccountStatus: updatedAccountStatus,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error.",
     });
   }
 }
