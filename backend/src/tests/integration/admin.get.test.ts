@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../../app.js";
 import { createTestUser } from "../helper/testUser.js";
 import { loginAndGetTestToken } from "../helper/testAuth.js";
-import { fillServicesTable } from "../helper/testService.js";
+import { createTestService } from "../helper/testService.js";
 
 describe("GET /api/admin/users", () => {
   let testToken: string;
@@ -43,7 +43,9 @@ describe("GET /api/admin/services", () => {
   });
 
   it("returns all services", async () => {
-    await fillServicesTable();
+    await createTestService();
+    await createTestService();
+
     const res = await request(app)
       .get("/api/admin/services")
       .set("Authorization", `Bearer ${testToken}`);
