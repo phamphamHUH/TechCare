@@ -15,6 +15,8 @@ const TABLES = [
   "laboratory_request_items",
   "laboratory_results",
   "bills",
+  "activity_logs",
+  "actions",
   "system_activity",
   "packages",
 ];
