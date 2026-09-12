@@ -11,9 +11,10 @@ const routes = [
   { method: "get", path: "/users" },
   { method: "post", path: "/add-user" },
   { method: "post", path: "/services" },
+  { method: "post", path: "/activities" },
+  { method: "post", path: "/actions" },
   { method: "patch", path: "/users/507f1f77bcf86cd799439011" },
   { method: "patch", path: "/users/507f1f77bcf86cd799439011/status" },
-  { method: "post", path: "/activities" },
 ];
 
 describe("admin router auth gate", () => {
