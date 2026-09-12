@@ -319,6 +319,7 @@ const TABLES: {
       billed_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
     },
   },
+
   {
     table: "system_activity",
     createSQL: `CREATE TABLE IF NOT EXISTS system_activity (
@@ -338,46 +339,7 @@ const TABLES: {
       created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
     },
   },
-  {
-    table: "activity_logs",
-    createSQL: `CREATE TABLE IF NOT EXISTS activity_logs (
-      id              SERIAL PRIMARY KEY,
-      user_id         VARCHAR(255) NOT NULL,
-      action_id       INTEGER NOT NULL,
-      status          VARCHAR(255) NOT NULL,
-      target_type     VARCHAR(100) NOT NULL,
-      target_id       VARCHAR(255) NOT NULL,
-      metadata        JSONB,
-      created_at      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-      )`,
-    columns: {
-      id: "SERIAL PRIMARY KEY",
-      user_id: "VARCHAR(255) NOT NULL REFERENCES users(user_id)",
-      action_id: "INTEGER NOT NULL",
-      status: "VARCHAR(255) NOT NULL",
-      target_type: "VARCHAR(100) NOT NULL",
-      target_id: "VARCHAR(255) NOT NULL",
-      metadata: "JSONB",
-      created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
-    },
-  },
-  {
-    table: "actions",
-    createSQL: `CREATE TABLE IF NOT EXISTS actions (
-      action_id           SERIAL PRIMARY KEY,
-      action_name         VARCHAR(255) NOT NULL UNIQUE, 
-      action_description  TEXT,
-      module              VARCHAR(100) NOT NULL,     
-      is_sensitive        BOOLEAN NOT NULL DEFAULT TRUE
-    )`,
-    columns: {
-      action_id: "SERIAL PRIMARY KEY",
-      action_name: "VARCHAR(255) NOT NULL UNIQUE",
-      action_description: "TEXT",
-      module: "VARCHAR(100) NOT NULL",
-      is_sensitive: "BOOLEAN NOT NULL DEFAULT TRUE",
-    },
-  },
+
   {
     table: "packages",
     createSQL: `CREATE TABLE IF NOT EXISTS packages (
