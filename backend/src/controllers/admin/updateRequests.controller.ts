@@ -2,6 +2,7 @@ import { sql } from "../../config/db.js";
 import cloudinary from "../../config/cloudinary.js";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
+import { logActivity } from "../../utils/activityLogger.js";
 
 export async function updateUser(req: Request, res: Response) {
   // PATCH /api/admin/users/:user_id
@@ -193,7 +194,10 @@ export async function updateUser(req: Request, res: Response) {
   }
 }
 
-export async function updateUserStatus(req: Request, res: Response) {
+export async function updateUserStatus(
+  req: Request<{ user_id: string }>,
+  res: Response,
+) {
   try {
     const { user_id } = req.params;
     const { account_status } = req.body;
@@ -210,10 +214,19 @@ export async function updateUserStatus(req: Request, res: Response) {
       });
     }
 
-    if (!account_status && user_id === req.user.user_id) {
-      return res
-        .status(400)
-        .json({ message: "You can't deactivate your own account." });
+    if (user_id === req.user.user_id) {
+      await logActivity({
+        userId: req.user.user_id,
+        actionName: "user.deactivate",
+        status: "blocked",
+        targetType: "user",
+        targetId: user_id,
+        metadata: { reason: "self-deactivation attempt" },
+      });
+
+      return res.status(400).json({
+        message: `You can't ${account_status ? "activate" : "deactivate"} your own account.`,
+      });
     }
 
     const updatedAccountStatus = await sql`
@@ -227,13 +240,23 @@ export async function updateUserStatus(req: Request, res: Response) {
                   role,
                   account_status;  
         `;
-
-    if (updatedAccountStatus.length !== 0) {
-      return res.status(200).json({
-        message: "User successfully deactivated.",
-        updatedAccountStatus: updatedAccountStatus,
-      });
+    if (updatedAccountStatus.length === 0) {
+      return res.status(404).json({ message: "User not found." });
     }
+
+    await logActivity({
+      userId: req.user.user_id,
+      actionName: account_status ? "user.activate" : "user.deactivate",
+      status: "success",
+      targetType: "user",
+      targetId: user_id,
+      metadata: { newStatus: account_status ? "activated" : "deactivated" },
+    });
+
+    return res.status(200).json({
+      message: `User successfully ${account_status ? "activated" : "deactivated"}.`,
+      updatedAccountStatus: updatedAccountStatus,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({
