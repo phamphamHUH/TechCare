@@ -240,9 +240,6 @@ export async function updateUserStatus(
                   role,
                   account_status;  
         `;
-    if (updatedAccountStatus.length === 0) {
-      return res.status(404).json({ message: "User not found." });
-    }
 
     await logActivity({
       userId: req.user.user_id,

@@ -1,30 +1,50 @@
 import { sql } from "../../config/db.js";
 
-export async function createTestService() {
-  const serviceId = Date.now();
-  const service = {
-    serviceId: `S-Test-${serviceId}`,
-    service_type: `Test-Service Type`,
-    service_name: `Test-Service-${serviceId}`,
-    price: 1000,
-    room: `Test-Room`,
-  };
-
+export async function fillServicesTable(): Promise<void> {
   await sql`
-      INSERT INTO services (
-        service_id,
-        service_type, 
-        service_name, 
-        price, 
-        room
+    INSERT INTO services (
+      service_id,
+      service_type,
+      service_name,
+      price,
+      room
+    )
+    VALUES
+      (
+        'S-CONSULTATION',
+        'Consultation',
+        'General Consultation',
+        500.00,
+        'Lab Room 1'
+      ),
+      (
+        'S-PEDIATRIC',
+        'Consultation',
+        'Pediatric Consultation',
+        600.00,
+        'Lab Room 1'
+      ),
+      (
+        'S-CBC',
+        'Laboratory',
+        'Complete Blood Count',
+        350.00,
+        'Lab Room 1'
+      ),
+      (
+        'S-URINALYSIS',
+        'Laboratory',
+        'Urinalysis',
+        200.00,
+        'Lab Room 1'
+      ),
+      (
+        'S-CHEST-XRAY',
+        'Radiology',
+        'Chest X-Ray',
+        800.00,
+        'Lab Room 2'
       )
-      VALUES (
-        ${service.serviceId},
-        ${service.service_type},  
-        ${service.service_name}, 
-        ${service.price}, 
-        ${service.room}
-      )
-    `;
-  return { service };
+    ON CONFLICT (service_id) DO NOTHING
+  `;
 }
