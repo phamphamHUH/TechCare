@@ -10,6 +10,7 @@ import {
   addUser,
   addService,
   addActivity,
+  addAction,
 } from "../controllers/admin/postRequests.controller.js";
 import {
   updateUser,
@@ -31,10 +32,13 @@ router.get("/services", getAllservices);
 router.get("/activity", getMyActivities);
 router.get("/activities", getAllActivities);
 router.get("/users", getAllUsers);
+
 router.post("/add-user", upload.single("image"), addUser);
 router.post("/services", addService);
+router.post("/activities", addActivity);
+router.post("/actions", addAction);
+
 router.patch("/users/:user_id", upload.single("image"), updateUser);
 router.patch("/users/:user_id/status", updateUserStatus);
-router.post("/activities", addActivity);
 
 export default router;
