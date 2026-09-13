@@ -1,4 +1,7 @@
+import api from "#lib/axios";
+import { use, useState } from "react";
 import type { User } from "../../../../interface/User";
+import { ConfirmationModal } from "./ConfirmationModal";
 import {
     X,
     Mail,
@@ -10,16 +13,23 @@ import {
 } from "lucide-react";
 
 type Props = {
-    user: User;
-    onBack: () => void;
-    setShowUpdateUser: () => void;
+  loadData: () => Promise<void>;
+  user: User;
+  onBack: () => void;
+  setShowUpdateUser: () => void;
+  setSelectedUser: React.Dispatch<React.SetStateAction<User>>;
 };
 
 function UserProfile({
-    user,
-    onBack,
-    setShowUpdateUser,
+  loadData,
+  user,
+  onBack,
+  setShowUpdateUser,
+  setSelectedUser,
 }: Props) {
+    const [updating, setUpdating] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const fullName = [
         user.first_name,
         user.middle_name,
@@ -40,6 +50,47 @@ function UserProfile({
         // Then open Update User.
         setShowUpdateUser();
     };
+
+    async function updateAccountStatus() {
+        setIsModalOpen(false); // Close modal first
+        setUpdating(true);
+
+        try {
+            const token = localStorage.getItem("token");
+            const newStatus = !user.account_status;
+            const response = await api.patch(
+                `api/admin/users/${user.user_id}/status`,
+                { account_status: newStatus },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            setSelectedUser((currentUser) => ({
+                ...currentUser,
+                account_status: newStatus,
+            }));
+
+            alert(response.data.message);
+            await loadData();
+        } catch (error: unknown) {
+            alert(
+                (
+                    error as {
+                        response?: {
+                            data?: {
+                                message?: string;
+                            };
+                        };
+                    }
+                ).response?.data?.message || "Something went wrong"
+            );
+        } finally {
+            setUpdating(false);
+        }
+    }
 
     return (
         <>
@@ -131,6 +182,39 @@ function UserProfile({
                                         <Pencil size={16} />
                                         Edit
                                     </button>
+
+                                    <button
+                                        onClick={() => setIsModalOpen(true)}
+                                        disabled={updating}
+                                        className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition disabled:opacity-50 ${
+                                            user.account_status
+                                                ? "bg-red-600 hover:bg-red-700"
+                                                : "bg-green-600 hover:bg-green-700"
+                                        }`}
+                                    >
+                                        {updating
+                                            ? "Updating..."
+                                            : user.account_status
+                                            ? "Deactivate"
+                                            : "Activate"}
+                                    </button>
+
+                                    <ConfirmationModal
+                                        isOpen={isModalOpen}
+                                        onClose={() => setIsModalOpen(false)}
+                                        onConfirm={updateAccountStatus}
+                                        title={
+                                            user.account_status
+                                                ? "Deactivate Account"
+                                                : "Activate Account"
+                                        }
+                                        message={
+                                            user.account_status
+                                                ? `Are you sure you want to deactivate ${user.first_name}'s account? They will lose system access.`
+                                                : `Are you sure you want to activate ${user.first_name}'s account?`
+                                        }
+                                        isDangerous={user.account_status}
+                                    />
 
                                 </div>
                             </div>
