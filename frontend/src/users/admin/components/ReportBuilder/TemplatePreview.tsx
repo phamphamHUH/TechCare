@@ -17,14 +17,14 @@ export default function TemplatePreview({
   const getWidthClass = (width?: string) => {
     switch (width) {
       case "1/4":
-        return "w-full sm:w-1/4";
+        return "w-full sm:w-[calc(25%-0.75rem)] flex-shrink-0";
       case "1/3":
-        return "w-full sm:w-1/3";
+        return "w-full sm:w-[calc((100%-2rem)/3)] flex-shrink-0";
       case "1/2":
-        return "w-full sm:w-1/2";
+        return "w-full sm:w-[calc(50%-0.5rem)] flex-shrink-0";
       case "FULL":
       default:
-        return "w-full";
+        return "w-full flex-shrink-0";
     }
   };
 

@@ -171,7 +171,7 @@ export default function TemplateLibrary({
             className="mt-4 flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-sky-400 text-sky-600 hover:bg-sky-50 text-xs font-bold transition-all shadow-xs cursor-pointer"
           >
             <Plus size={16} />
-            <span> Create New Template</span>
+            <span>Create New Template</span>
           </button>
         </div>
 
@@ -227,7 +227,7 @@ export default function TemplateLibrary({
               );
             })}
 
-            {/* Empty Outline Placeholders matching prototype grid */}
+      
             {Array.from({
               length: Math.max(0, 11 - sortedTemplates.length),
             }).map((_, i) => (
@@ -238,7 +238,10 @@ export default function TemplateLibrary({
             ))}
           </div>
 
-          {/* Pagination */}
+          {/* PAALIS LANG NG LINE 231 TO 239 PAG GUSTO ALISIN YUNG PLACEHOLDERS */}
+        
+
+  
           <div className="flex items-center justify-between mt-8 text-xs text-gray-500">
             <span>
               Showing 1 - {sortedTemplates.length} of {templates.length} templates

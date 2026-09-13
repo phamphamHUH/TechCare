@@ -15,6 +15,23 @@ interface TemplateBuilderProps {
   onBackToLibrary: () => void;
 }
 
+const DEFAULT_NEW_COMPONENTS: BuilderComponent[] = [
+  {
+    id: "comp_header_hematology",
+    type: "section_header",
+    label: "HEMATOLOGY",
+    fieldKey: "hematology_section",
+    order: 1,
+    settings: {
+      sectionHeader: "HEMATOLOGY",
+      width: "FULL",
+      alignment: "left",
+      showInPreview: true,
+    },
+    validation: {},
+  },
+];
+
 export default function TemplateBuilder({
   initialTemplate,
   onBackToLibrary,
@@ -26,10 +43,12 @@ export default function TemplateBuilder({
     initialTemplate?.category || "Hematology"
   );
   const [components, setComponents] = useState<BuilderComponent[]>(
-    initialTemplate?.components ? [...initialTemplate.components] : []
+    initialTemplate?.components
+      ? [...initialTemplate.components]
+      : DEFAULT_NEW_COMPONENTS
   );
   const [selectedId, setSelectedId] = useState<string | null>(
-    initialTemplate?.components?.[0]?.id || null
+    initialTemplate?.components?.[0]?.id || DEFAULT_NEW_COMPONENTS[0].id
   );
   const [showPreview, setShowPreview] = useState(false);
   const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
@@ -134,14 +153,15 @@ export default function TemplateBuilder({
       fromIndex < 0 ||
       fromIndex >= components.length ||
       toIndex < 0 ||
-      toIndex >= components.length
+      toIndex > components.length
     ) {
       return;
     }
 
     const updated = [...components];
     const [moved] = updated.splice(fromIndex, 1);
-    updated.splice(toIndex, 0, moved);
+    const destination = toIndex > fromIndex ? toIndex - 1 : toIndex;
+    updated.splice(destination, 0, moved);
     setComponents(updated.map((c, i) => ({ ...c, order: i + 1 })));
   };
 
