@@ -4,20 +4,11 @@ import api from "../../lib/axios";
 import LaboratoryRequests from "./pages/LaboratoryRequests";
 import SideBar from "../../components/SideBar";
 import { useSearchParams } from "react-router";
-import LabstaffDashboard from "./pages/LabstaffDashbaord";
+import LabstaffDashboard from "./pages/LabstaffDashboard";
 import LaboratoryResults from "./pages/LaboratoryResults";
+import type { Queue } from "../../interface/Queue";
+import type { Service } from "../../interface/Service";
 
-type Queue = {
-  id: number;
-  queue_id: string;
-  patient_id: string;
-  queue_number: number;
-  service_id: string;
-  is_priority: boolean;
-  status: string;
-  created_at: string;
-  updated_at: string;
-};
 type LabRequest = {
   request_id: string;
   consultation_id: string | null;
@@ -28,16 +19,6 @@ type LabRequest = {
   status: string;
   requested_at: string;
   updated_at: string;
-};
-
-type Service = {
-  id: number;
-  service_id: string;
-  service_name: string;
-  service_type: string;
-  price: number;
-  active: boolean;
-  room: string;
 };
 
 function LaboratoryStaff() {
@@ -105,7 +86,14 @@ function LaboratoryStaff() {
   return (
     <div className="flex min-h-screen cursor-default">
       <SideBar open={open} page={page} setPage={setPage} navItems={navItems} />
-      {page === "dashboard" && <LabstaffDashboard />}
+      {page === "dashboard" && (
+        <LabstaffDashboard
+          open={open}
+          setOpen={setOpen}
+          loading={loading}
+          loadData={() => loadData()}
+        />
+      )}
 
       {page === "laboratory-requests" && (
         <LaboratoryRequests

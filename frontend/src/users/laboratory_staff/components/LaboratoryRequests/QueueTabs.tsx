@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 
 type MainFilter = "All" | "Waiting" | "Serving" | "Completed" | "Skipped";
 
