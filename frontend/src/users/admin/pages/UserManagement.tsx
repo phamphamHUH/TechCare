@@ -139,16 +139,16 @@ function UserManagement({
           ))}
         </div>
       ) : (
-        <div className="border border-gray-300 rounded-xl py-16 text-center px-6">
+        <div className="border border-gray-300 rounded-xl py-16 text-center mx-6">
           <Search
             size={32}
             strokeWidth={1.5}
             className="mx-auto text-gray-400 mb-3"
           />
 
-          <h3 className="text-lg font-semibold">No users found</h3>
+          <h3 className="text-lg font-semibold px-6">No users found</h3>
 
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1 px-6">
             No users match "{search}"
           </p>
         </div>
