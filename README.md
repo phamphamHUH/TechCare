@@ -56,10 +56,12 @@ IS_PRODUCTION=false or true
 
 
 # for sharing on port forwardng
-VITE_API_BASE_URL=https://wtmr826f-5173.asse.devtunnels.ms/
+VITE_API_BASE_URL=devtunnelIP
 
 # for local development 
 VITE_API_BASE_URL=http://localhost:5000
+
 # for deployment
 #VITE_API_BASE_URL=https://techcare-hui6.onrender.com
+
 VITE_IS_DEVELOPMENT=false
