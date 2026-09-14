@@ -86,7 +86,14 @@ function LaboratoryStaff() {
   return (
     <div className="flex min-h-screen cursor-default">
       <SideBar open={open} page={page} setPage={setPage} navItems={navItems} />
-      {page === "dashboard" && <LabstaffDashboard />}
+      {page === "dashboard" && (
+        <LabstaffDashboard
+          open={open}
+          setOpen={setOpen}
+          loading={loading}
+          loadData={() => loadData()}
+        />
+      )}
 
       {page === "laboratory-requests" && (
         <LaboratoryRequests

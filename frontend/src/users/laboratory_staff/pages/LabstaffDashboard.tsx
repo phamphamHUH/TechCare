@@ -1,7 +1,27 @@
-function LabstaffDashboard() {
+import Header from "#components/Header";
+
+type LaboratoryDashboardProps = {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  loadData: () => Promise<void>;
+  loading: boolean;
+};
+
+function LabstaffDashboard({
+  open,
+  setOpen,
+  loadData,
+  loading,
+}: LaboratoryDashboardProps) {
   return (
-    <main className="border-l border-gray-300 bg-white">
-      <h1>Laboratory Staff Dashboard</h1>
+    <main className="flex-1 min-w-0 border-gray-300">
+      <Header
+        page="Dashboard"
+        loading={loading}
+        open={open}
+        setOpen={setOpen}
+        loadData={loadData}
+      />
     </main>
   );
 }

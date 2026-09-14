@@ -8,26 +8,26 @@ type SideBarProps = {
 function SideBar({ open, page, setPage, navItems }: SideBarProps) {
   return (
     <aside
-      className={`bg-white border-right-1 text-black h-screen overflow-hidden transition-all duration-300 ${
-        open ? "w-64 p-6" : "w-0 p-0"
+      className={`bg-white border-r border-gray-300 text-black h-screen overflow-hidden transition-all duration-300 ${
+        open ? "w-64" : "w-0 p-0"
       }`}
     >
       {open && (
         <>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-start gap-2 h-24 border-b border-gray-300  px-2 mb-6">
             <img
               src="/assets/reyna-g-logo.png"
               alt="Logo"
-              className="w-15 h-15 object-contain"
+              className="w-20 h-20 object-contain"
             />
-            <p className="font-bold text-lg">Reyna G</p>
+            <p className="font-extrabold text-3xl tracking-wider">Reyna G</p>
           </div>
 
-          <nav className="flex flex-col gap-3">
+          <nav className="flex flex-col gap-3 px-5">
             {navItems.map((item) => (
               <a
                 key={item.page}
-                className={`hover:font-bold border-1 rounded-[20px] p-5 ${
+                className={`hover:scale-101 active:scale-99 active:border-red-800 border rounded-[20px] py-5 px-2 ${
                   page === item.page
                     ? "bg-red-800 text-white border-red-800"
                     : ""

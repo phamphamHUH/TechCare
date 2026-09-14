@@ -1,9 +1,7 @@
 import { useState } from "react";
 import Header from "../../../components/Header";
 import type { ReportTemplate } from "../components/ReportBuilder/types";
-import {
-  INITIAL_TEMPLATES_LIST,
-} from "../components/ReportBuilder/sampleTemplates";
+import { INITIAL_TEMPLATES_LIST } from "../components/ReportBuilder/sampleTemplates";
 import TemplateLibrary from "../components/ReportBuilder/TemplateLibrary";
 import TemplateBuilder from "../components/ReportBuilder/TemplateBuilder";
 
@@ -24,8 +22,9 @@ export default function ReportBuilder({
   const [templates, setTemplates] = useState<ReportTemplate[]>([
     ...INITIAL_TEMPLATES_LIST,
   ]);
-  const [editingTemplate, setEditingTemplate] =
-    useState<ReportTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] = useState<ReportTemplate | null>(
+    null,
+  );
 
   const handleCreateNew = () => {
     setEditingTemplate(null);
@@ -47,7 +46,7 @@ export default function ReportBuilder({
   };
 
   return (
-    <main className="flex-1 min-w-0 p-6 overflow-y-auto">
+    <main className="flex-1 min-w-0 overflow-y-auto">
       <Header
         open={open}
         loading={loading}
@@ -56,7 +55,7 @@ export default function ReportBuilder({
         page="Report Builder"
       />
 
-      <div className="mt-4">
+      <div className="mt-4 px-6">
         {viewMode === "library" ? (
           <TemplateLibrary
             templates={templates}
@@ -74,4 +73,3 @@ export default function ReportBuilder({
     </main>
   );
 }
-

@@ -34,7 +34,7 @@ function LaboratoryRequests({
   );
 
   return (
-    <main className="flex-1 min-w-0 bg-white border-l border-gray-300">
+    <main className="flex-1 min-w-0 border-gray-300">
       <Header
         page="Laboratory Requests"
         loading={loading}
