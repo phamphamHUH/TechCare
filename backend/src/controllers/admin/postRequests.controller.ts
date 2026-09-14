@@ -8,7 +8,6 @@ import {
   generateServiceId,
   generateActivityId,
 } from "../../utils/generateId.js";
-import { ENV } from "../../config/env.js";
 
 ///// the tokenantion on ad user is just for testing purposes,
 /// it will be removed later on. optional lang kasi no need tokens right after sign up, its usually on login========
@@ -277,5 +276,44 @@ export async function addActivity(req: Request, res: Response) {
     res.status(201).json({ user: response[0], message: "Sign up successful!" });
   } catch (error) {
     res.status(500).json({ error: "error on adding activity controller" });
+  }
+}
+
+export async function addAction(req: Request, res: Response) {
+  try {
+    const { action_name, action_description, module, is_sensitive } = req.body;
+
+    if (!action_name || !module) {
+      return res.status(400).json({
+        message: "Please fill out required fields.",
+      });
+    }
+
+    const newAction = await sql`
+      INSERT INTO actions(
+        action_name,
+        action_description,
+        module,
+        is_sensitive
+      )
+      VALUES(
+        ${action_name},
+        ${action_description ?? null},
+        ${module},
+        ${is_sensitive ?? true}
+      )
+      RETURNING *;
+    `;
+
+    res.status(201).json({
+      message: "Action successfully added.",
+      newAction,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
   }
 }

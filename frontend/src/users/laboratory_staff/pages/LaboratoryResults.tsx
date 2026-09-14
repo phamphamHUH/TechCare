@@ -292,7 +292,7 @@ function LaboratoryResults({
   };
 
   return (
-    <main className="min-w-0 flex-1 p-6 border-l border-gray-500">
+    <main className="flex-1 min-w-0 border-gray-300">
       <Header
         page="Laboratory Results"
         loading={loading}
@@ -302,7 +302,7 @@ function LaboratoryResults({
       />
 
       {/* Page heading */}
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-6">
         <div>
           <h2 className="text-xl font-semibold text-slate-900">
             Laboratory Results
@@ -321,13 +321,13 @@ function LaboratoryResults({
 
       {/* General error */}
       {error && (
-        <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 mx-6">
           {error}
         </div>
       )}
 
       {/* MAIN LABORATORY RESULTS AREA */}
-      <div className="flex flex-col gap-5 xl:flex-row">
+      <div className="flex flex-col gap-5 xl:flex-row px-6">
         {/* LEFT TABLE */}
         <ReleasingSide
           requests={requests}

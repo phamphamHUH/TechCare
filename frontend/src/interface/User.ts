@@ -20,7 +20,7 @@ export type User = {
   shift_end: string;
   profile_photo: string | null;
   active: boolean;
-  deleted: boolean;
+  account_status: boolean;
   created_at: string;
   updated_at: string;
 };

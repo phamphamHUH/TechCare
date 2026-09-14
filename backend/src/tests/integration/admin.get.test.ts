@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../../app.js";
 import { createTestUser } from "../helper/testUser.js";
 import { loginAndGetTestToken } from "../helper/testAuth.js";
-import { createTestService } from "../helper/testService.js";
+import { fillServicesTable } from "../helper/testService.js";
 
 describe("GET /api/admin/users", () => {
   let testToken: string;
@@ -43,9 +43,7 @@ describe("GET /api/admin/services", () => {
   });
 
   it("returns all services", async () => {
-    await createTestService();
-    await createTestService();
-
+    await fillServicesTable();
     const res = await request(app)
       .get("/api/admin/services")
       .set("Authorization", `Bearer ${testToken}`);
