@@ -397,6 +397,37 @@ const TABLES: {
       updated_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
     },
   },
+
+  {
+   table: "report_templates",
+    createSQL: `CREATE TABLE IF NOT EXISTS report_templates (
+      id            SERIAL PRIMARY KEY,
+      fixture_id    VARCHAR(255) UNIQUE NOT NULL,
+      name          VARCHAR(255) NOT NULL,
+      description   TEXT,
+      category      VARCHAR(100) NOT NULL,
+      status        VARCHAR(20) NOT NULL DEFAULT 'Draft',
+      components    JSONB NOT NULL DEFAULT '[]'::jsonb,
+      created_by    VARCHAR(255),
+      usage_count   INTEGER NOT NULL DEFAULT 0,
+      created_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  columns: {
+    id: "SERIAL PRIMARY KEY",
+    fixture_id: "VARCHAR(255) UNIQUE NOT NULL",
+    name: "VARCHAR(255) NOT NULL",
+    description: "TEXT",
+    category: "VARCHAR(100) NOT NULL",
+    status: "VARCHAR(20) NOT NULL DEFAULT 'Draft'",
+    components: "JSONB NOT NULL DEFAULT '[]'::jsonb",
+    created_by: "VARCHAR(255)",
+    usage_count: "INTEGER NOT NULL DEFAULT 0",
+    created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+    updated_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+  },
+},
+
 ];
 // -----------------------------------------------------------------------
 // CONNECT TO DATABASE
