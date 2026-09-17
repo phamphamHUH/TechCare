@@ -13,6 +13,7 @@ import TemplatePreview from "./TemplatePreview";
 interface TemplateBuilderProps {
   initialTemplate?: ReportTemplate | null;
   onBackToLibrary: () => void;
+  onSaveTemplate: (template: ReportTemplate) => void;
 }
 
 const DEFAULT_NEW_COMPONENTS: BuilderComponent[] = [
@@ -35,6 +36,7 @@ const DEFAULT_NEW_COMPONENTS: BuilderComponent[] = [
 export default function TemplateBuilder({
   initialTemplate,
   onBackToLibrary,
+  onSaveTemplate,
 }: TemplateBuilderProps) {
   const [templateName, setTemplateName] = useState(
     initialTemplate?.name || ""
@@ -54,6 +56,7 @@ export default function TemplateBuilder({
   const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
 
   const isEditMode = Boolean(initialTemplate);
+
 
   const handleAddComponent = (type: ComponentType, targetIndex?: number) => {
     const tempId = `comp_${Date.now()}_${Math.random()
