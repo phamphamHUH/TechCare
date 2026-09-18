@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../../../lib/axios";
 import Header from "../../../components/Header";
 import type { ReportTemplate } from "../components/ReportBuilder/types";
 import { INITIAL_TEMPLATES_LIST } from "../components/ReportBuilder/sampleTemplates";
@@ -36,10 +37,17 @@ export default function ReportBuilder({
     setViewMode("builder");
   };
 
-  const handleDeleteTemplate = (fixtureId: string) => {
-    setTemplates((prev) => prev.filter((t) => t.fixtureId !== fixtureId));
-  };
+  const handleDeleteTemplate = async (fixtureId: string) => {
+    try {
+      await api.delete(`/api/admin/templates/${fixtureId}`);
 
+      setTemplates((prev) =>
+        prev.filter((template) => template.fixtureId !== fixtureId),
+      );
+    } catch (error) {
+      console.error("Failed to delete template:", error);
+    }
+  };
   const handleBackToLibrary = () => {
     setViewMode("library");
     setEditingTemplate(null);
