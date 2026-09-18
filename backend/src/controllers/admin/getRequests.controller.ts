@@ -174,3 +174,60 @@ export async function getMyActivities(req: Request, res: Response) {
     res.status(500).json({ error: "error on get your activities" });
   }
 }
+
+export async function getAllFormTemplates(req: Request, res: Response) {
+  try {
+    const { service_id, status } = req.query;
+    const templates = await sql`
+      SELECT * FROM form_templates
+      WHERE
+        (${service_id ?? null}::VARCHAR IS NULL OR service_id = ${service_id ?? null})
+        AND (${status ?? null}::VARCHAR IS NULL OR status = ${status ?? null})
+      ORDER BY created_at DESC
+    `;
+
+    res.status(200).json({
+      message: "Form templates fetched successfully",
+      formTemplates: templates,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error.",
+    });
+  }
+}
+
+export async function getFormTemplateById(req: Request, res: Response) {
+  try {
+    const { form_id } = req.params;
+
+    if (!form_id) {
+      return res.status(400).json({ message: "Form ID is required." });
+    }
+
+    const [formTemplate] = await sql`
+      SELECT * FROM form_templates
+      WHERE form_id = ${form_id}
+    `;
+
+    if (!formTemplate) {
+      return res.status(404).json({ message: "Form template not found." });
+    }
+
+    const components = await sql`
+      SELECT * FROM form_components
+      WHERE form_id = ${form_id}
+      ORDER BY display_order ASC
+    `;
+
+    res.status(200).json({
+      message: "Form template fetched successfully",
+      formTemplate,
+      components,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
