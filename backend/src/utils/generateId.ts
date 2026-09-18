@@ -259,4 +259,28 @@ export async function generateQueueNumberLaboratory() {
 
   return nextNumber;
 }
+
+export async function generateTemplateId() {
+  const now = new Date();
+
+  const year = String(now.getFullYear()).slice(-2);
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+
+  const prefix = `${year}-${month}`;
+  const templatesCreatedThisMonth = await sql`
+    SELECT template_id
+    FROM form_templates
+    WHERE template_id LIKE ${`TPL-${prefix}-%`}
+    ORDER BY template_id DESC
+    LIMIT 1
+  `;
+
+  let nextNumber = 1;
+
+  if (templatesCreatedThisMonth.length > 0) {
+    nextNumber = Number(templatesCreatedThisMonth[0].template_id.slice(-3)) + 1;
+  }
+  const sequence = String(nextNumber).padStart(3, "0");
+  return `TPL-${prefix}-${sequence}`;
+}
 ///=======================================================================================

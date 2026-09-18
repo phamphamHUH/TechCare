@@ -31,27 +31,6 @@ export default function ReportBuilder({
     setViewMode("builder");
   };
 
-  const handleSaveTemplate = (updatedTemplate: ReportTemplate) => {
-  setTemplates((prev) => {
-    const exists = prev.some(
-      (template) => template.fixtureId === updatedTemplate.fixtureId
-    );
-
-    if (exists) {
-      return prev.map((template) =>
-        template.fixtureId === updatedTemplate.fixtureId
-          ? updatedTemplate
-          : template
-      );
-    }
-
-    return [...prev, updatedTemplate];
-  });
-
-  setEditingTemplate(null);
-  setViewMode("library");
-};
-
   const handleEditTemplate = (template: ReportTemplate) => {
     setEditingTemplate(template);
     setViewMode("builder");
@@ -59,6 +38,20 @@ export default function ReportBuilder({
 
   const handleDeleteTemplate = (fixtureId: string) => {
     setTemplates((prev) => prev.filter((t) => t.fixtureId !== fixtureId));
+  };
+
+  const handleTemplateSaved = (saved: ReportTemplate) => {
+    setTemplates((prev) => {
+      const exists = prev.some((t) => t.fixtureId === saved.fixtureId);
+      return exists
+        ? prev.map((t) => (t.fixtureId === saved.fixtureId ? saved : t))
+        : [saved, ...prev];
+    });
+  };
+
+  const handleSaveTemplate = (saved: ReportTemplate) => {
+    handleTemplateSaved(saved);
+    handleBackToLibrary();
   };
 
   const handleBackToLibrary = () => {

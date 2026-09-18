@@ -4,11 +4,13 @@ import type {
   BuilderComponent,
   ComponentType,
   ReportTemplate,
+  TemplateStatus,
 } from "./types";
 import ComponentPalette from "./ComponentPalette";
 import BuilderCanvas from "./BuilderCanvas";
 import ComponentSettings from "./ComponentSettings";
 import TemplatePreview from "./TemplatePreview";
+import api from "../../../../lib/axios";
 
 interface TemplateBuilderProps {
   initialTemplate?: ReportTemplate | null;
@@ -54,31 +56,38 @@ export default function TemplateBuilder({
   );
   const [showPreview, setShowPreview] = useState(false);
   const [noticeMessage, setNoticeMessage] = useState<string | null>(null);
+  const [noticeType, setNoticeType] = useState<"info" | "error">("info");
+  const [submitting, setSubmitting] = useState(false);
 
   const isEditMode = Boolean(initialTemplate);
 
-  const handleSaveTemplate = () => {
-  if (!templateName.trim()) {
-    setNoticeMessage("Template name is required.");
-    return;
-  }
-
-  const updatedTemplate: ReportTemplate = {
-    fixtureId:
-      initialTemplate?.fixtureId ||
-      `template_${Date.now()}`,
-    name: templateName.trim(),
-    description: initialTemplate?.description || "",
-    category,
-    status: initialTemplate?.status || "Draft",
-    components,
-    createdBy: initialTemplate?.createdBy || "Admin",
-    usageCount: initialTemplate?.usageCount || 0,
-    lastUpdated: new Date().toISOString(),
+  const triggerNotice = (message: string, type: "info" | "error" = "info") => {
+    setNoticeType(type);
+    setNoticeMessage(message);
+    setTimeout(() => setNoticeMessage(null), 4000);
   };
 
-  onSaveTemplate(updatedTemplate);
-};
+  const handleSaveTemplate = () => {
+    if (!templateName.trim()) {
+      triggerNotice("Template name is required.", "error");
+      return;
+    }
+
+    const updatedTemplate: ReportTemplate = {
+      fixtureId: initialTemplate?.fixtureId || `template_${Date.now()}`,
+      name: templateName.trim(),
+      description: initialTemplate?.description || "",
+      category,
+      status: initialTemplate?.status || "Draft",
+      components,
+      createdBy: initialTemplate?.createdBy || "Admin",
+      usageCount: initialTemplate?.usageCount || 0,
+      lastUpdated: new Date().toISOString(),
+    };
+
+    onSaveTemplate(updatedTemplate);
+    triggerNotice("Template saved to library.");
+  };
 
   const handleAddComponent = (type: ComponentType, targetIndex?: number) => {
     const tempId = `comp_${Date.now()}_${Math.random()
@@ -191,10 +200,64 @@ export default function TemplateBuilder({
   };
 
   const triggerPrototypeNotice = (action: string) => {
-    setNoticeMessage(
+    triggerNotice(
       `Prototype only — ${action} is not connected to the database yet.`
     );
-    setTimeout(() => setNoticeMessage(null), 4000);
+  };
+
+  const handleSubmit = async (status: TemplateStatus) => {
+    if (!templateName.trim()) {
+      triggerNotice("Please enter a template name before saving.", "error");
+      return;
+    }
+
+    setSubmitting(true);
+
+    const payload = {
+      name: templateName,
+      category,
+      status,
+      components,
+    };
+
+    try {
+      const response = isEditMode
+        ? await api.patch(
+            `/api/admin/templates/${initialTemplate?.fixtureId}`,
+            payload
+          )
+        : await api.post("/api/admin/templates", payload);
+
+      const saved = response.data.template;
+
+      const savedTemplate: ReportTemplate = {
+        fixtureId: saved.template_id,
+        name: saved.name,
+        description: saved.description,
+        category: saved.category,
+        status: saved.status,
+        components: saved.components || components,
+        createdBy: saved.created_by,
+        usageCount: saved.usage_count,
+        lastUpdated: saved.updated_at,
+      };
+
+      onSaveTemplate(savedTemplate);
+      triggerNotice(
+        status === "Published"
+          ? "Template published successfully!"
+          : "Draft saved successfully!"
+      );
+      onBackToLibrary();
+    } catch (error: unknown) {
+      const message =
+        (error as { response?: { data?: { message?: string } } }).response
+          ?.data?.message || "Something went wrong while saving the template.";
+      triggerNotice(message, "error");
+      console.error(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const selectedComponent =
@@ -204,15 +267,30 @@ export default function TemplateBuilder({
     <div className="flex flex-col gap-5 w-full">
       {/* Notice Banner */}
       {noticeMessage && (
-        <div className="bg-sky-50 border border-sky-200 text-sky-800 text-xs px-4 py-3 rounded-2xl flex items-center justify-between shadow-sm animate-fade-in">
+        <div
+          className={
+            noticeType === "error"
+              ? "bg-red-50 border border-red-200 text-red-800 text-xs px-4 py-3 rounded-2xl flex items-center justify-between shadow-sm animate-fade-in"
+              : "bg-sky-50 border border-sky-200 text-sky-800 text-xs px-4 py-3 rounded-2xl flex items-center justify-between shadow-sm animate-fade-in"
+          }
+        >
           <div className="flex items-center gap-2 font-medium">
-            <AlertCircle size={16} className="text-sky-600 flex-shrink-0" />
+            <AlertCircle
+              size={16}
+              className={
+                noticeType === "error" ? "text-red-600 flex-shrink-0" : "text-sky-600 flex-shrink-0"
+              }
+            />
             <span>{noticeMessage}</span>
           </div>
           <button
             type="button"
             onClick={() => setNoticeMessage(null)}
-            className="text-sky-600 hover:text-sky-800 font-bold ml-4"
+            className={
+              noticeType === "error"
+                ? "text-red-600 hover:text-red-800 font-bold ml-4"
+                : "text-sky-600 hover:text-sky-800 font-bold ml-4"
+            }
           >
             Dismiss
           </button>

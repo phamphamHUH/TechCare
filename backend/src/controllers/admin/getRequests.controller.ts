@@ -172,3 +172,17 @@ export async function getMyActivities(req: Request, res: Response) {
     res.status(500).json({ error: "error on get your activities" });
   }
 }
+
+export async function getAllTemplates(req: Request, res: Response) {
+  // GET /api/admin/templates
+  try {
+    const templates = await sql`
+      SELECT * FROM form_templates
+      ORDER BY updated_at DESC
+    `;
+    return res.status(200).json({ templates });
+  } catch (error) {
+    console.error("GET TEMPLATES ERROR:", error);
+    res.status(500).json({ message: "Failed to fetch templates" });
+  }
+}

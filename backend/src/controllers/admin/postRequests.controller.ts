@@ -7,6 +7,7 @@ import {
   generateUserId,
   generateServiceId,
   generateActivityId,
+  generateTemplateId,
 } from "../../utils/generateId.js";
 
 ///// the tokenantion on ad user is just for testing purposes,
@@ -314,6 +315,58 @@ export async function addAction(req: Request, res: Response) {
 
     return res.status(500).json({
       message: "Internal Server Error",
+    });
+  }
+}
+
+export async function addTemplate(req: Request, res: Response) {
+  // POST /api/admin/templates
+
+  try {
+    const { name, description, category, status, components } = req.body;
+
+    if (!name || !category) {
+      return res.status(400).json({
+        message: "Template name and category are required",
+      });
+    }
+
+    const allowedStatuses = ["Draft", "Published", "Archived"];
+    const finalStatus = allowedStatuses.includes(status) ? status : "Draft";
+
+    const templateId = await generateTemplateId();
+
+    const newTemplate = await sql`
+      INSERT INTO form_templates (
+        template_id,
+        name,
+        description,
+        category,
+        status,
+        components,
+        created_by
+      )
+      VALUES (
+        ${templateId},
+        ${name},
+        ${description || null},
+        ${category},
+        ${finalStatus},
+        ${JSON.stringify(components || [])}::jsonb,
+        ${req.user?.username || null}
+      )
+      RETURNING *;
+    `;
+
+    return res.status(201).json({
+      message: "Template created successfully!",
+      template: newTemplate[0],
+    });
+  } catch (error) {
+    console.error("ADD TEMPLATE ERROR:", error);
+
+    return res.status(500).json({
+      message: "Failed to create template",
     });
   }
 }

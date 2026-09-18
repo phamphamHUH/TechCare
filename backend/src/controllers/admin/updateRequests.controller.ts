@@ -194,6 +194,57 @@ export async function updateUser(req: Request, res: Response) {
   }
 }
 
+export async function updateTemplate(
+  req: Request<{ template_id: string }>,
+  res: Response,
+) {
+  // PATCH /api/admin/templates/:template_id
+
+  try {
+    const { template_id } = req.params;
+    const { name, description, category, status, components } = req.body;
+
+    const allowedStatuses = ["Draft", "Published", "Archived"];
+    if (status !== undefined && !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        message: "Status must be one of Draft, Published, Archived",
+      });
+    }
+
+    const updatedTemplate = await sql`
+      UPDATE form_templates
+      SET
+        name = COALESCE(${name}, name),
+        description = COALESCE(${description}, description),
+        category = COALESCE(${category}, category),
+        status = COALESCE(${status}, status),
+        components = COALESCE(${
+          components ? JSON.stringify(components) : null
+        }::jsonb, components),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE template_id = ${template_id}
+      RETURNING *;
+    `;
+
+    if (updatedTemplate.length === 0) {
+      return res.status(404).json({
+        message: "Template not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Template updated successfully!",
+      template: updatedTemplate[0],
+    });
+  } catch (error) {
+    console.error("UPDATE TEMPLATE ERROR:", error);
+
+    return res.status(500).json({
+      message: "Failed to update template",
+    });
+  }
+}
+
 export async function updateUserStatus(
   req: Request<{ user_id: string }>,
   res: Response,
