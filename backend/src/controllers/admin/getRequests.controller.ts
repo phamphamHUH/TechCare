@@ -54,42 +54,15 @@ export async function getAllUsers(req: Request, res: Response) {
 export async function getAllActivities(req: Request, res: Response) {
   // get /api/admin/activities
   try {
-    const { status, action_id} = req.body;
-    const activities = await sql`SELECT
-      WHERE status = ${status} AND action_id = ${action_id}
-      ORDER BY sa.created_at DESC;
+    const activities = await sql`SELECT * FROM activity_logs
 `;
     if (activities.length === 0) {
-      return res.status(200).json({ activities: [], message: "there are no activities" });
+      return res
+        .status(200)
+        .json({ activities: [], message: "there are no activities" });
     }
 
     res.status(200).json({ activities });
-    // {
-    //     "activities": [
-    //         {
-    //             "activity_id": 1,
-    //             "user_id": 11,
-    //             "service_name": "pakalbo",
-    //             "details": {
-    //                 "kalbo": "panot",
-    //                 "semiKal": "utot"
-    //             },
-    //             "created_at": "2026-06-28T20:19:10.904Z",
-    //             "username": "testing"
-    //         },
-    //         {
-    //             "activity_id": 2,
-    //             "user_id": 11,
-    //             "service_name": "pakalbo",
-    //             "details": {
-    //                 "kalbo": "panot",
-    //                 "semiKal": "utot"
-    //             },
-    //             "created_at": "2026-06-28T20:19:22.051Z",
-    //             "username": "testing"
-    //         }
-    //     ]
-    // }
   } catch (error) {
     res.status(500).json({ error: "error on get acts controller" });
   }

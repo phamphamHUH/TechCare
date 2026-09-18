@@ -2,11 +2,9 @@ import type { Activity } from "../../../../interface/Activity.ts";
 
 type Props = {
   activities: Activity[];
-  selectedId: number | null;
-  onSelect: (activity: Activity) => void;
 };
 
-function ActivityTable({ activities, selectedId, onSelect }: Props) {
+function ActivityTable({ activities }: Props) {
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
       <table className="min-w-full text-sm">
@@ -23,17 +21,11 @@ function ActivityTable({ activities, selectedId, onSelect }: Props) {
           {activities.length > 0 ? (
             activities.map((activity) => {
               const createdAt = new Date(activity.created_at);
-              const isSelected = activity.id === selectedId;
 
               return (
                 <tr
                   key={activity.id}
-                  onClick={() => onSelect(activity)}
-                  className={`border-t cursor-pointer transition-colors ${
-                    isSelected
-                      ? "bg-blue-50 border-l-2 border-l-blue-500"
-                      : "hover:bg-gray-50"
-                  }`}
+                  className={`border-t cursor-pointer transition-colors`}
                 >
                   <td className="px-4 py-3 align-top">
                     <div className="font-medium text-gray-800">
@@ -52,19 +44,16 @@ function ActivityTable({ activities, selectedId, onSelect }: Props) {
                     </div>
                   </td>
 
-                  <td className="px-4 py-3 align-top">
-                    {activity.username}
-                  </td>
+                  <td className="px-4 py-3 align-top">{activity.user_id}</td>
 
                   <td className="px-4 py-3 align-top text-gray-700">
-                    {activity.service_name}
+                    {activity.action_id}
                   </td>
 
                   <td className="px-4 py-3 align-top">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        onSelect(activity);
                       }}
                       className="text-blue-600 underline underline-offset-2 hover:text-blue-800 cursor-pointer"
                     >
@@ -76,10 +65,7 @@ function ActivityTable({ activities, selectedId, onSelect }: Props) {
             })
           ) : (
             <tr>
-              <td
-                colSpan={4}
-                className="px-4 py-10 text-center text-gray-500"
-              >
+              <td colSpan={4} className="px-4 py-10 text-center text-gray-500">
                 No activities found.
               </td>
             </tr>

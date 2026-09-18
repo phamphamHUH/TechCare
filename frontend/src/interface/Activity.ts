@@ -1,10 +1,11 @@
 export type Activity = {
   id: number;
-  activity_id: string;
-  user_id: number;
-  username: string;
-  service_name: string;
-  details: Record<string, unknown>;
+  user_id: string;
+  action_id: string;
+  status: string;
+  target_type: string;
+  target_id: string;
+  metadata: string;
   created_at: string;
 };
 
