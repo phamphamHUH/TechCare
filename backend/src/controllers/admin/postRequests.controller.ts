@@ -2,7 +2,6 @@ import { sql } from "../../config/db.js";
 import cloudinary from "../../config/cloudinary.js";
 import bcrypt from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import {
   generateUserId,
   generateServiceId,
@@ -313,6 +312,79 @@ export async function addAction(req: Request, res: Response) {
     console.error(error);
 
     return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+}
+
+export async function addFormTemplates(req: Request, res: Response) {
+  const {
+    form_name,
+    form_description,
+    status,
+    service_id,
+    created_by,
+    form_components,
+  } = req.body;
+
+  if (
+    !form_name ||
+    !service_id ||
+    !created_by ||
+    !Array.isArray(form_components) ||
+    form_components.length === 0
+  ) {
+    return res.status(400).json({
+      message: "Required fields missing.",
+    });
+  }
+
+  try {
+    const [checkExisting] = await sql`
+    SELECT form_id FROM form_templates
+    WHERE service_id = ${service_id}
+    AND status = 'Published'
+    `;
+
+    if (checkExisting) {
+      return res.status(400).json({
+        message: "An active form template already exist for the service.",
+      });
+    }
+
+    await sql.query("BEGIN");
+    const form_id = `F-${Date.now()}`;
+    const [formCreated] = await sql`
+      INSERT INTO form_templates (form_id, form_name, form_description, service_id, status, created_by)
+      VALUES (${form_id}, ${form_name}, ${form_description}, ${service_id}, ${status}, ${created_by})
+      RETURNING *
+    `;
+
+    const componentsCreated = [];
+    for (let index = 0; index < form_components.length; index++) {
+      const c = form_components[index];
+      const form_component_id = `FC-${form_id}-${index}`;
+
+      const [component] = await sql`
+          INSERT INTO form_components
+            (form_component_id, form_id, type_id, label, field_key, display_order, settings, validation)
+          VALUES
+            (${form_component_id}, ${form_id}, ${c.type_id}, ${c.label}, ${c.field_key}, ${c.display_order}, ${c.settings}, ${c.validation})
+          RETURNING *
+        `;
+      componentsCreated.push(component);
+    }
+
+    await sql.query("COMMIT");
+    res.status(201).json({
+      message: "Form successfully created",
+      formCreated,
+      componentsCreated,
+    });
+  } catch (error) {
+    console.error(error);
+    await sql.query("ROLLBACK");
+    res.status(500).json({
       message: "Internal Server Error",
     });
   }
