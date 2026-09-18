@@ -2,6 +2,7 @@ import { sql } from "../../config/db.js";
 import cloudinary from "../../config/cloudinary.js";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
+import { logActivity } from "../../utils/activityLogger.js";
 
 export async function updateUser(req: Request, res: Response) {
   // PATCH /api/admin/users/:user_id
@@ -26,7 +27,6 @@ export async function updateUser(req: Request, res: Response) {
       role,
       department,
       employment_status,
-      account_status,
       date_hired,
       shift_start,
       shift_end,
@@ -49,12 +49,9 @@ export async function updateUser(req: Request, res: Response) {
     let profilePhoto: string | null = null;
 
     if (req.file) {
-      const uploadResult = await cloudinary.uploader.upload(
-        req.file.path,
-        {
-          folder: "techcare/user_photos",
-        }
-      );
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: "techcare/user_photos",
+      });
 
       profilePhoto = uploadResult.secure_url;
     }
@@ -143,11 +140,6 @@ export async function updateUser(req: Request, res: Response) {
           employment_status
         ),
 
-        account_status = COALESCE(
-          ${account_status},
-          account_status
-        ),
-
         date_hired = COALESCE(
           ${date_hired},
           date_hired
@@ -193,12 +185,79 @@ export async function updateUser(req: Request, res: Response) {
       message: "User updated successfully!",
       user: updatedUser[0],
     });
-
   } catch (error) {
     console.error("UPDATE USER ERROR:", error);
 
     return res.status(500).json({
       message: "Failed to update user",
+    });
+  }
+}
+
+export async function updateUserStatus(
+  req: Request<{ user_id: string }>,
+  res: Response,
+) {
+  try {
+    const { user_id } = req.params;
+    const { account_status } = req.body;
+
+    if (account_status === undefined) {
+      return res.status(400).json({
+        message: "Account status is required.",
+      });
+    }
+
+    if (typeof account_status !== "boolean") {
+      return res.status(400).json({
+        message: "Account status must be a boolean.",
+      });
+    }
+
+    if (user_id === req.user.user_id) {
+      await logActivity({
+        userId: req.user.user_id,
+        actionName: "user.deactivate",
+        status: "blocked",
+        targetType: "user",
+        targetId: user_id,
+        metadata: { reason: "self-deactivation attempt" },
+      });
+
+      return res.status(400).json({
+        message: `You can't ${account_status ? "activate" : "deactivate"} your own account.`,
+      });
+    }
+
+    const updatedAccountStatus = await sql`
+        UPDATE users
+        SET account_status = ${account_status}, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ${user_id}
+        RETURNING user_id,
+                  first_name,
+                  last_name,
+                  middle_name,
+                  role,
+                  account_status;  
+        `;
+
+    await logActivity({
+      userId: req.user.user_id,
+      actionName: account_status ? "user.activate" : "user.deactivate",
+      status: "success",
+      targetType: "user",
+      targetId: user_id,
+      metadata: { newStatus: account_status ? "activated" : "deactivated" },
+    });
+
+    return res.status(200).json({
+      message: `User successfully ${account_status ? "activated" : "deactivated"}.`,
+      updatedAccountStatus: updatedAccountStatus,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal Server Error.",
     });
   }
 }

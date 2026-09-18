@@ -1,7 +1,6 @@
-import Header from "../../../components/Header"
+import Header from "../../../components/Header";
 import { useEffect, useState } from "react";
 import ActivityDetails from "../components/ActivityMonitoring/ActivityDetails";
-
 
 type Activity = {
   id: number;
@@ -21,36 +20,42 @@ type ActivityModalProps = {
   loading: boolean;
 };
 
-
-function ActivityMonitoring({ activities, open, setOpen, loadData, loading }: ActivityModalProps) {
-
+function ActivityMonitoring({
+  activities,
+  open,
+  setOpen,
+  loadData,
+  loading,
+}: ActivityModalProps) {
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  const [selectedDetails, setSelectedDetails] = useState<Record<string, unknown> | null>(null);
-  const [showActivityDetails, setShowActivityDetails] = useState(false)
+  const [selectedDetails, setSelectedDetails] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
+  const [showActivityDetails, setShowActivityDetails] = useState(false);
   return (
-    <main className="flex-1 min-w-0 p-6">
-
+    <main className="flex-1 min-w-0">
       <Header
-      loading={loading}
+        loading={loading}
         open={open}
         setOpen={setOpen}
         loadData={loadData}
         page="Activity Monitoring"
       />
-      {showActivityDetails &&
+      {showActivityDetails && (
         <ActivityDetails
           details={selectedDetails ?? {}}
           onClose={() => setShowActivityDetails(false)}
         />
-      }
+      )}
       {/* <button
         onClick={() => setShowActivityDetails(true)}
       >Show </button> */}
 
-      <div className="overflow-x-auto rounded-lg border border-gray-300 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-gray-300 bg-white mx-6">
         <table className="min-w-full">
           <thead className="bg-gray-100">
             <tr>
@@ -73,22 +78,18 @@ function ActivityMonitoring({ activities, open, setOpen, loadData, loading }: Ac
                   <button
                     className="bg-gray-200"
                     onClick={() => {
-                      setSelectedDetails(activity.details)
-                      setShowActivityDetails(true)
+                      setSelectedDetails(activity.details);
+                      setShowActivityDetails(true);
                     }}
                   >
                     Show Details
                   </button>
                 </td>
               </tr>
-
-            )
-            )}
-
+            ))}
           </tbody>
         </table>
       </div>
-
     </main>
   );
 }
