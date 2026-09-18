@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type {FormTemplate} from "../../../../interface/FormTemplate";
 import {
   Search,
   Clock,
@@ -12,9 +13,9 @@ import type { ReportTemplate } from "./types";
 import TemplatePreview from "./TemplatePreview";
 
 interface TemplateLibraryProps {
-  templates: ReportTemplate[];
+  templates: FormTemplate[];
   onCreateNew: () => void;
-  onEditTemplate: (template: ReportTemplate) => void;
+  onEditTemplate: (template: FormTemplate) => void;
   onDeleteTemplate: (fixtureId: string) => void;
 }
 
@@ -38,38 +39,38 @@ export default function TemplateLibrary({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("most_used");
   const [selectedTemplate, setSelectedTemplate] =
-    useState<ReportTemplate | null>(templates[0] || null);
+    useState<FormTemplate | null>(templates[0] || null);
   const [previewTemplate, setPreviewTemplate] =
-    useState<ReportTemplate | null>(null);
+    useState<FormTemplate | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Filter templates
   const filteredTemplates = templates.filter((tpl) => {
     const matchesCat =
       selectedCategory === "All Templates" ||
-      tpl.category.toLowerCase() === selectedCategory.toLowerCase();
+      tpl.service_id.toLowerCase() === selectedCategory.toLowerCase();
 
     const matchesSearch =
-      tpl.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tpl.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (tpl.description &&
-        tpl.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      tpl.form_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tpl.service_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (tpl.form_description &&
+        tpl.form_description.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return matchesCat && matchesSearch;
   });
 
   // Sort templates
-  const sortedTemplates = [...filteredTemplates].sort((a, b) => {
-    if (sortBy === "name_asc") return a.name.localeCompare(b.name);
-    if (sortBy === "name_desc") return b.name.localeCompare(a.name);
-    if (sortBy === "recently_updated") return 0;
-    return (b.usageCount || 0) - (a.usageCount || 0);
-  });
+  // const sortedTemplates = [...filteredTemplates].sort((a, b) => {
+  //   if (sortBy === "name_asc") return a.form_name.localeCompare(b.form_name);
+  //   if (sortBy === "name_desc") return b.form_name.localeCompare(a.form_name);
+  //  if (sortBy === "recently_updated") return 0;
+  //  return (b.usageCount || 0) - (a.usageCount || 0);
+  //});
 
   const getCategoryCount = (cat: string) => {
     if (cat === "All Templates") return templates.length;
     return templates.filter(
-      (t) => t.category.toLowerCase() === cat.toLowerCase()
+      (t) => t.service_id.toLowerCase() === cat.toLowerCase()
     ).length;
   };
 
@@ -184,11 +185,11 @@ export default function TemplateLibrary({
                 : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
             }`}
           >
-            {sortedTemplates.map((tpl) => {
-              const isSelected = selectedTemplate?.fixtureId === tpl.fixtureId;
+            {filteredTemplates.map((tpl) => {
+              const isSelected = selectedTemplate?.form_id === tpl.form_id;
               return (
                 <div
-                  key={tpl.fixtureId}
+                  key={tpl.form_id}
                   onClick={() => setSelectedTemplate(tpl)}
                   className={`bg-white border rounded-2xl p-4 flex flex-col justify-between h-44 transition-all cursor-pointer shadow-xs hover:shadow-sm ${
                     isSelected
@@ -200,7 +201,7 @@ export default function TemplateLibrary({
                     {/* Blue circle placeholder */}
                     <div className="w-10 h-10 rounded-full bg-sky-300/80 mb-3" />
                     <h4 className="font-bold text-gray-900 text-xs truncate">
-                      {tpl.name}
+                      {tpl.form_name}
                     </h4>
                     <span className="text-[10px] text-gray-400 font-mono block mt-0.5">
                       S-123-456-789
@@ -210,7 +211,7 @@ export default function TemplateLibrary({
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100 text-[11px] text-gray-500">
                     <div className="flex items-center gap-1">
                       <Clock size={12} className="text-gray-400" />
-                      <span>{tpl.usageCount || 0} times</span>
+                      {/* <span>{tpl.usageCount || 0} times</span> */}
                     </div>
                     <button
                       type="button"
@@ -229,7 +230,7 @@ export default function TemplateLibrary({
 
       
             {Array.from({
-              length: Math.max(0, 11 - sortedTemplates.length),
+              length: Math.max(0, 11 - filteredTemplates.length),
             }).map((_, i) => (
               <div
                 key={`placeholder-${i}`}
@@ -244,7 +245,7 @@ export default function TemplateLibrary({
   
           <div className="flex items-center justify-between mt-8 text-xs text-gray-500">
             <span>
-              Showing 1 - {sortedTemplates.length} of {templates.length} templates
+              Showing 1 - {filteredTemplates.length} of {templates.length} templates
             </span>
             <div className="flex items-center gap-1.5">
               <button
@@ -296,16 +297,16 @@ export default function TemplateLibrary({
                 <div className="w-12 h-12 rounded-full bg-sky-200/80 flex-shrink-0" />
                 <div>
                   <h4 className="font-bold text-gray-900 text-sm">
-                    {selectedTemplate.name}
+                    {selectedTemplate.form_name}
                   </h4>
                   <span className="text-xs text-gray-500">
-                    {selectedTemplate.category}
+                    {selectedTemplate.service_id || "No Service ID"}
                   </span>
                 </div>
               </div>
 
               <p className="text-xs text-gray-600 leading-relaxed">
-                {selectedTemplate.description ||
+                {selectedTemplate.form_description ||
                   "No description provided for this template."}
               </p>
 
@@ -313,31 +314,31 @@ export default function TemplateLibrary({
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Category:</span>
                   <span className="font-medium text-gray-800">
-                    {selectedTemplate.category}
+                    {selectedTemplate.service_id || "Uncategorized"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Components:</span>
                   <span className="font-medium text-gray-800">
-                    {selectedTemplate.components.length} Fields
+                    {/* {selectedTemplate.components.length} Fields */}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Last Updated:</span>
                   <span className="font-medium text-gray-800">
-                    {selectedTemplate.lastUpdated || "Recently"}
+                    {selectedTemplate.updated_at || "Recently"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Created By:</span>
                   <span className="font-medium text-gray-800">
-                    {selectedTemplate.createdBy || "Administrator"}
+                    {selectedTemplate.created_by || "Administrator"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-400">Usage:</span>
                   <span className="font-medium text-gray-800">
-                    {selectedTemplate.usageCount || 0} times
+                    {/* {selectedTemplate.usageCount || 0} times */}
                   </span>
                 </div>
               </div>
@@ -386,7 +387,7 @@ export default function TemplateLibrary({
             <p className="text-xs text-gray-500 mb-6">
               Are you sure you want to delete{" "}
               <span className="font-bold text-gray-700">
-                "{selectedTemplate.name}"
+                "{selectedTemplate.form_name}"
               </span>
               ? This action will remove it from the library during this session.
             </p>
@@ -401,7 +402,7 @@ export default function TemplateLibrary({
               <button
                 type="button"
                 onClick={() => {
-                  onDeleteTemplate(selectedTemplate.fixtureId);
+                  onDeleteTemplate(selectedTemplate.form_id);
                   setShowDeleteConfirm(false);
                   setSelectedTemplate(null);
                 }}
@@ -415,14 +416,14 @@ export default function TemplateLibrary({
       )}
 
       {/* Live Preview Modal */}
-      {previewTemplate && (
+      {/* {previewTemplate && (
         <TemplatePreview
-          templateName={previewTemplate.name}
-          category={previewTemplate.category}
+          templateName={previewTemplate.form_name}
+          category={previewTemplate.service_id || "Uncategorized"}
           components={previewTemplate.components}
           onClose={() => setPreviewTemplate(null)}
         />
-      )}
+      )} */}
     </div>
   );
 }
