@@ -16,6 +16,7 @@ import {
   addFormTemplates,
 } from "../controllers/admin/postRequests.controller.js";
 import {
+  updateFormTemplate,
   updateUser,
   updateUserStatus,
 } from "../controllers/admin/updateRequests.controller.js";
@@ -24,12 +25,12 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 import adminMiddleware from "../middlewares/admin.middleware.js";
 const router = Router();
 
-// if (ENV.IS_PRODUCTION) {
-//   router.use(authMiddleware, adminMiddleware);
-//   console.log("Lab Staff routes enabled");
-// }
+if (ENV.IS_PRODUCTION) {
+  router.use(authMiddleware, adminMiddleware);
+  console.log("Lab Staff routes enabled");
+}
 
-router.use(authMiddleware, adminMiddleware);
+// router.use(authMiddleware, adminMiddleware);
 
 router.get("/services", getAllservices);
 router.get("/activity", getMyActivities);
@@ -43,6 +44,8 @@ router.post("/services", addService);
 router.post("/activities", addActivity);
 router.post("/actions", addAction);
 router.post("/form-templates", addFormTemplates);
+
+router.put("/form-templates/:form_id", updateFormTemplate);
 
 router.patch("/users/:user_id", upload.single("image"), updateUser);
 router.patch("/users/:user_id/status", updateUserStatus);
