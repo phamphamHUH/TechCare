@@ -57,6 +57,28 @@ export default function TemplateBuilder({
 
   const isEditMode = Boolean(initialTemplate);
 
+  const handleSaveTemplate = () => {
+  if (!templateName.trim()) {
+    setNoticeMessage("Template name is required.");
+    return;
+  }
+
+  const updatedTemplate: ReportTemplate = {
+    fixtureId:
+      initialTemplate?.fixtureId ||
+      `template_${Date.now()}`,
+    name: templateName.trim(),
+    description: initialTemplate?.description || "",
+    category,
+    status: initialTemplate?.status || "Draft",
+    components,
+    createdBy: initialTemplate?.createdBy || "Admin",
+    usageCount: initialTemplate?.usageCount || 0,
+    lastUpdated: new Date().toISOString(),
+  };
+
+  onSaveTemplate(updatedTemplate);
+};
 
   const handleAddComponent = (type: ComponentType, targetIndex?: number) => {
     const tempId = `comp_${Date.now()}_${Math.random()
@@ -337,7 +359,7 @@ export default function TemplateBuilder({
           </button>
           <button
             type="button"
-            onClick={() => triggerPrototypeNotice("template saving")}
+            onClick={handleSaveTemplate}
             className="px-5 py-2.5 rounded-xl border border-sky-300 hover:bg-sky-50 text-sky-700 text-xs font-semibold transition-colors cursor-pointer"
           >
             Save Draft
