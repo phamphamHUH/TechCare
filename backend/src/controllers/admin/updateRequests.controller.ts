@@ -261,3 +261,73 @@ export async function updateUserStatus(
     });
   }
 }
+
+export async function updateFormTemplate(req: Request, res: Response) {
+  const { form_id } = req.params;
+  const { form_name, form_description, status, form_components } = req.body;
+
+  if (!form_id) {
+    return res.status(400).json({ message: "form_id is required." });
+  }
+
+  if (
+    !form_name ||
+    !Array.isArray(form_components) ||
+    form_components.length === 0
+  ) {
+    return res.status(400).json({ message: "Required fields missing." });
+  }
+
+  try {
+    const [checkExisting] = await sql`
+      SELECT * FROM form_templates WHERE form_id = ${form_id}
+    `;
+
+    if (!checkExisting) {
+      return res.status(404).json({ message: "Form template not found." });
+    }
+
+    await sql.query("BEGIN");
+    const [formUpdated] = await sql`
+      UPDATE form_templates
+      SET form_name = ${form_name},
+          form_description = ${form_description},
+          status = ${status},
+          version = version + 1,
+          updated_at = CURRENT_TIMESTAMP
+      WHERE form_id = ${form_id}
+      RETURNING *
+    `;
+
+    await sql`
+      DELETE FROM form_components WHERE form_id = ${form_id}
+    `;
+
+    const componentsUpdated = [];
+    for (let index = 0; index < form_components.length; index++) {
+      const c = form_components[index];
+      const form_component_id = `FC-${form_id}-${index}`;
+
+      const [component] = await sql`
+        INSERT INTO form_components
+          (form_component_id, form_id, type_id, label, field_key, display_order, settings, validation)
+        VALUES
+          (${form_component_id}, ${form_id}, ${c.type_id}, ${c.label}, ${c.field_key}, ${c.display_order}, ${c.settings}, ${c.validation})
+        RETURNING *
+      `;
+      componentsUpdated.push(component);
+    }
+
+    await sql.query("COMMIT");
+
+    res.status(200).json({
+      message: "Form template updated successfully",
+      formUpdated,
+      componentsUpdated,
+    });
+  } catch (error) {
+    console.error(error);
+    await sql.query("ROLLBACK");
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
