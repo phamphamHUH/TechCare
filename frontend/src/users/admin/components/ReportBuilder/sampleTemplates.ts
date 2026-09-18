@@ -183,7 +183,4 @@ export const SAMPLE_CBC_TEMPLATE: ReportTemplate = {
   ],
 };
 
-export const INITIAL_TEMPLATES_LIST: ReportTemplate[] = [
-  SAMPLE_CBC_TEMPLATE,
-];
-
+export const INITIAL_TEMPLATES_LIST: ReportTemplate[] = [SAMPLE_CBC_TEMPLATE];

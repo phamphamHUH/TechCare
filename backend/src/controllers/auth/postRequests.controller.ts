@@ -47,6 +47,13 @@ export async function login(req: Request, res: Response) {
         message: "Invalid password",
       });
     }
+
+    if (user.account_status === false) {
+      return res.status(403).json({
+       message:"Your account has been deactivated. Please contact the administrator.",
+     });
+    }
+
     const response = await sql`
             UPDATE users
             SET active = TRUE

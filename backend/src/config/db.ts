@@ -287,7 +287,75 @@ const TABLES: {
       created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
     },
   },
-
+  {
+    table: "form_templates",
+    createSQL: `CREATE TABLE IF NOT EXISTS form_templates (
+      id                SERIAL PRIMARY KEY,
+      form_id           VARCHAR(255) UNIQUE NOT NULL,
+      form_name         VARCHAR(255) NOT NULL,
+      form_description  TEXT,
+      service_id        VARCHAR(255) NOT NULL REFERENCES services(service_id),
+      status            VARCHAR(255) NOT NULL DEFAULT 'Published',
+      created_by        VARCHAR(255) NOT NULL REFERENCES users(user_id),
+      version           INTEGER NOT NULL DEFAULT 1,
+      created_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`,
+    columns: {
+      id: "SERIAL PRIMARY KEY",
+      form_id: "VARCHAR(255) UNIQUE NOT NULL",
+      form_name: "VARCHAR(255) NOT NULL",
+      form_description: "TEXT",
+      service_id: "VARCHAR(255) NOT NULL REFERENCES services(service_id)",
+      status: "VARCHAR(50) NOT NULL DEFAULT 'Published'",
+      created_by: "VARCHAR(255) NOT NULL REFERENCES users(user_id)",
+      version: "INTEGER NOT NULL DEFAULT 1",
+      created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+      updated_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+    },
+  },
+  {
+    table: "form_component_types",
+    createSQL: `CREATE TABLE IF NOT EXISTS form_component_types (
+      id          SERIAL PRIMARY KEY,
+      type_id     VARCHAR(255) UNIQUE NOT NULL,
+      type_name   VARCHAR(100) NOT NULL UNIQUE,
+      data_type   VARCHAR(50) NOT NULL,
+      created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )`,
+    columns: {
+      id: "SERIAL PRIMARY KEY",
+      type_id: "VARCHAR(255) UNIQUE NOT NULL",
+      type_name: "VARCHAR(100) NOT NULL UNIQUE",
+      data_type: "VARCHAR(50) NOT NULL",
+      created_at: "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+    },
+  },
+  {
+    table: "form_components",
+    createSQL: `CREATE TABLE IF NOT EXISTS form_components (
+      id                  SERIAL PRIMARY KEY,
+      form_component_id   VARCHAR(255) UNIQUE NOT NULL,
+      form_id             VARCHAR(255) NOT NULL REFERENCES form_templates(form_id),
+      type_id             VARCHAR(255) NOT NULL REFERENCES form_component_types(type_id),
+      label               VARCHAR(255) NOT NULL,
+      field_key           VARCHAR(255) NOT NULL,
+      display_order       INTEGER NOT NULL,
+      settings            JSONB,
+      validation          JSONB
+    )`,
+    columns: {
+      id: "SERIAL PRIMARY KEY",
+      form_component_id: "VARCHAR(255) UNIQUE NOT NULL",
+      form_id: "VARCHAR(255) NOT NULL REFERENCES form_templates(form_id)",
+      type_id: "VARCHAR(255) NOT NULL REFERENCES form_component_types(type_id)",
+      label: "VARCHAR(255) NOT NULL",
+      field_key: "VARCHAR(255) NOT NULL",
+      display_order: "INTEGER NOT NULL",
+      settings: "JSONB",
+      validation: "JSONB",
+    },
+  },
   {
     table: "bills",
     createSQL: `CREATE TABLE IF NOT EXISTS bills (
