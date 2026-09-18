@@ -54,13 +54,9 @@ export async function getAllUsers(req: Request, res: Response) {
 export async function getAllActivities(req: Request, res: Response) {
   // get /api/admin/activities
   try {
-    const activities = await sql`
-      SELECT
-          sa.*,
-          u.username
-      FROM system_activity sa
-      JOIN users u
-      ON sa.user_id = u.user_id;
+    const { status, action_id} = req.body;
+    const activities = await sql`SELECT
+      WHERE status = ${status} AND action_id = ${action_id}
       ORDER BY sa.created_at DESC;
 `;
     if (activities.length === 0) {
