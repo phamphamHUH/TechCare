@@ -5,18 +5,18 @@ import { Request, Response } from "express";
 // ARCHIVE TEMPLATE
 // =========================
 export async function archiveTemplate(
-  req: Request<{ template_id: string }>,
+  req: Request<{ form_id: string }>,
   res: Response,
 ) {
   // PATCH /api/admin/templates/:template_id/archive
 
   try {
-    const { template_id } = req.params;
+    const { form_id } = req.params;
 
     const archivedTemplate = await sql`
       UPDATE form_templates
       SET status = 'Archived', updated_at = CURRENT_TIMESTAMP
-      WHERE template_id = ${template_id}
+      WHERE form_id = ${form_id}
       RETURNING *;
     `;
 
@@ -43,17 +43,17 @@ export async function archiveTemplate(
 // DELETE TEMPLATE
 // =========================
 export async function deleteTemplate(
-  req: Request<{ template_id: string }>,
+  req: Request<{ form_id: string }>,
   res: Response,
 ) {
-  // DELETE /api/admin/templates/:template_id
+  // DELETE /api/admin/templates/:form_id
 
   try {
-    const { template_id } = req.params;
+    const { form_id } = req.params;
 
     const deletedTemplate = await sql`
       DELETE FROM form_templates
-      WHERE template_id = ${template_id}
+      WHERE form_id = ${form_id}
       RETURNING *;
     `;
 
