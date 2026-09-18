@@ -5,6 +5,8 @@ import {
   getAllservices,
   getMyActivities,
   getAllActivities,
+  getAllFormTemplates,
+  getFormTemplateById,
 } from "../controllers/admin/getRequests.controller.js";
 import {
   addUser,
@@ -33,6 +35,8 @@ router.get("/services", getAllservices);
 router.get("/activity", getMyActivities);
 router.get("/activities", getAllActivities);
 router.get("/users", getAllUsers);
+router.get("/form-templates", getAllFormTemplates);
+router.get("/form-templates/:form_id", getFormTemplateById);
 
 router.post("/add-user", upload.single("image"), addUser);
 router.post("/services", addService);
