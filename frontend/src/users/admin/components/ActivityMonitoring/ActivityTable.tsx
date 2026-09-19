@@ -1,18 +1,27 @@
+import type { Dispatch, SetStateAction } from "react";
 import type { Activity } from "../../../../interface/Activity.ts";
 
-type Props = {
+type ActivityTableProps = {
   activities: Activity[];
+  setSelectedForm: Dispatch<SetStateAction<number | null>>;
+  setShowActivityDetails: Dispatch<SetStateAction<boolean>>;
 };
 
-function ActivityTable({ activities }: Props) {
+function ActivityTable({
+  activities,
+  setSelectedForm,
+  setShowActivityDetails,
+}: ActivityTableProps) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white h-screen">
       <table className="min-w-full text-sm">
         <thead className="bg-gray-50 text-gray-500">
           <tr>
             <th className="px-4 py-3 text-left font-medium">Date and Time</th>
             <th className="px-4 py-3 text-left font-medium">User</th>
             <th className="px-4 py-3 text-left font-medium">Action</th>
+            <th className="px-4 py-3 text-left font-medium">Target ID</th>
+            <th className="px-4 py-3 text-left font-medium">Module</th>
             <th className="px-4 py-3 text-left font-medium">Details</th>
           </tr>
         </thead>
@@ -47,13 +56,21 @@ function ActivityTable({ activities }: Props) {
                   <td className="px-4 py-3 align-top">{activity.user_id}</td>
 
                   <td className="px-4 py-3 align-top text-gray-700">
-                    {activity.action_id}
+                    {activity.action_name}
+                  </td>
+                  <td className="px-4 py-3 align-top text-gray-700">
+                    {activity.target_id}
+                  </td>
+                  <td className="px-4 py-3 align-top text-gray-700">
+                    {activity.module}
                   </td>
 
                   <td className="px-4 py-3 align-top">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        setSelectedForm(activity.id);
+                        setShowActivityDetails(true);
                       }}
                       className="text-blue-600 underline underline-offset-2 hover:text-blue-800 cursor-pointer"
                     >

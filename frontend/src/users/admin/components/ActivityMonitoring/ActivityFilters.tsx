@@ -1,7 +1,5 @@
 import { Search } from "lucide-react";
-
-export type SortOrder = "newest" | "oldest";
-export type SeverityFilter = "all" | "critical" | "low";
+import type { SortOrder, SeverityFilter } from "../../../../interface/Activity";
 
 type ActivityFiltersProps = {
   search: string;
@@ -28,7 +26,7 @@ function ActivityFilters({
 }: ActivityFiltersProps) {
   return (
     <div className="flex flex-wrap items-center gap-3 mb-4">
-      <div className="relative flex-1 min-w-[220px]">
+      <div className="relative flex-1 min-w-55">
         <Search
           size={18}
           strokeWidth={1.5}

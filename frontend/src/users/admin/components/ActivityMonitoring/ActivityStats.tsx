@@ -1,7 +1,7 @@
-import type { ActivityStats as ActivityStatsType } from "../../../../interface/Activity.ts";
+import type { ActivityStatistics } from "../../../../interface/Activity.ts";
 
 type Props = {
-  stats: ActivityStatsType;
+  stats: ActivityStatistics;
 };
 
 function ActivityStats({ stats }: Props) {
@@ -44,7 +44,9 @@ function ActivityStats({ stats }: Props) {
         <div key={card.label} className={`rounded-xl p-4 ${card.bg}`}>
           <div className="flex items-center gap-2 mb-2">
             <span className={`h-2.5 w-2.5 rounded-full ${card.dot}`} />
-            <span className="text-xs font-medium text-gray-600">{card.label}</span>
+            <span className="text-xs font-medium text-gray-600">
+              {card.label}
+            </span>
           </div>
           <p className="text-2xl font-bold text-gray-900">{card.value}</p>
         </div>

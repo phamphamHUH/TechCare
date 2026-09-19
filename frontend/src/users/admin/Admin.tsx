@@ -4,8 +4,8 @@ import {
   LayoutGrid,
   Users,
   BadgeDollarSign,
-  Activity,
   FileText,
+  SquareActivityIcon,
 } from "lucide-react";
 import UserManagement from "./pages/UserManagement";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -16,15 +16,8 @@ import ReportBuilder from "./pages/ReportBuilder";
 import api from "../../lib/axios";
 import type { User } from "../../interface/User";
 import type { Service } from "../../interface/Service";
-type Activities = {
-  id: number;
-  activity_id: string;
-  user_id: number;
-  username: string;
-  service_name: string;
-  details: Record<string, unknown>;
-  created_at: string;
-};
+import type { Activity } from "../../interface/Activity";
+
 // each element must be either:
 
 // No object at all (the array is empty)
@@ -33,7 +26,7 @@ type Activities = {
 function Admin() {
   const [users, setUsers] = useState<User[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [activities, setActivities] = useState<Activities[]>([]); // Acitivities[] this means that this object structure can be a lot of objects // array
+  const [activities, setActivities] = useState<Activity[]>([]); // Acitivities[] this means that this object structure can be a lot of objects // array
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -60,7 +53,7 @@ function Admin() {
     {
       page: "activity-monitoring",
       label: "Activity Monitoring",
-      icon: <Activity size={20} />,
+      icon: <SquareActivityIcon size={20} />,
     },
     {
       page: "report-builder",

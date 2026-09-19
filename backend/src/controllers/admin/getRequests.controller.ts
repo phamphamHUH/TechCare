@@ -54,7 +54,21 @@ export async function getAllUsers(req: Request, res: Response) {
 export async function getAllActivities(req: Request, res: Response) {
   // get /api/admin/activities
   try {
-    const activities = await sql`SELECT * FROM activity_logs
+    const activities = await sql`
+      SELECT 
+        al.id,
+        al.user_id,
+        a.action_name,
+        a.action_description,
+        a.module,
+        a.is_sensitive,
+        al.status,
+        al.target_type,
+        al.target_id, 
+        al.metadata,
+        al.created_at
+      FROM activity_logs al
+      JOIN actions a on a.action_id = al.action_id
 `;
     if (activities.length === 0) {
       return res

@@ -1,4 +1,4 @@
-export type ActivityTab = "all" | "user" | "patient";
+import type { ActivityTab } from "../../../../interface/Activity";
 
 type Props = {
   activeTab: ActivityTab;
